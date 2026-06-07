@@ -2,16 +2,18 @@
   "name": "hiveclean",
   "version": "1.0.0",
   "main": "electron/main.js",
- "scripts": {
-  "dev": "vite",
-  "electron": "cross-env NODE_ENV=development electron .",
-  "start": "concurrently \"npm run dev\" \"npm run electron\"",
-  "build": "vite build",
-  "preview": "vite preview"
-},
+  "scripts": {
+    "dev": "vite",
+    "electron": "cross-env NODE_ENV=development electron .",
+    "start": "concurrently \"npm run dev\" \"npm run electron\"",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
