@@ -1,112 +1,246 @@
 import { useState } from 'react'
 
-// color for each category badge
+// ─── CONSTANTS ────────────────────────────────────────────
 const CATEGORY_COLORS = {
-  Image:     { bg: '#e0f2fe', text: '#0369a1' },
-  Video:     { bg: '#fce7f3', text: '#9d174d' },
-  Audio:     { bg: '#f3e8ff', text: '#7e22ce' },
-  PDF:       { bg: '#fee2e2', text: '#991b1b' },
-  Document:  { bg: '#fef9c3', text: '#854d0e' },
-  Archive:   { bg: '#ffedd5', text: '#9a3412' },
-  Code:      { bg: '#d1fae5', text: '#065f46' },
-  Installer: { bg: '#e0e7ff', text: '#3730a3' },
-  Other:     { bg: '#f1f5f9', text: '#475569' },
+  Image:     'bg-blue-100 text-blue-700',
+  Video:     'bg-pink-100 text-pink-700',
+  Audio:     'bg-purple-100 text-purple-700',
+  PDF:       'bg-red-100 text-red-700',
+  Document:  'bg-yellow-100 text-yellow-700',
+  Archive:   'bg-orange-100 text-orange-700',
+  Code:      'bg-green-100 text-green-700',
+  Installer: 'bg-indigo-100 text-indigo-700',
+  Other:     'bg-gray-100 text-gray-600',
 }
 
+const CATEGORY_ICONS = {
+  Image:     '🖼',
+  Video:     '🎬',
+  Audio:     '🎵',
+  PDF:       '📄',
+  Document:  '📝',
+  Archive:   '🗜',
+  Code:      '💻',
+  Installer: '⚙',
+  Other:     '📦',
+}
+// ──────────────────────────────────────────────────────────
+
+// ─── SMALL COMPONENTS ─────────────────────────────────────
 function CategoryBadge({ category }) {
   const colors = CATEGORY_COLORS[category] || CATEGORY_COLORS.Other
   return (
-    <span style={{
-      background: colors.bg,
-      color: colors.text,
-      padding: '2px 8px',
-      borderRadius: '9999px',
-      fontSize: '0.75rem',
-      fontWeight: 600,
-    }}>
-      {category}
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${colors}`}>
+      {CATEGORY_ICONS[category]} {category}
     </span>
   )
 }
 
-function App() {
-  const [files, setFiles] = useState([])
-  const [loading, setLoading] = useState(false)
+function StatCard({ label, value, sub, accent }) {
+  return (
+    <div className={`rounded-xl p-4 flex flex-col gap-1 ${accent}`}>
+      <span className="text-xs font-medium uppercase tracking-wide opacity-70">{label}</span>
+      <span className="text-2xl font-bold">{value}</span>
+      {sub && <span className="text-xs opacity-60">{sub}</span>}
+    </div>
+  )
+}
+// ──────────────────────────────────────────────────────────
 
+export default function App() {
+  const [files, setFiles]       = useState([])
+  const [loading, setLoading]   = useState(false)
+  const [filter, setFilter]     = useState('All')
+  const [scanned, setScanned]   = useState(false)
+
+  // ─── SCAN ───────────────────────────────────────────────
   async function handleScan() {
     setLoading(true)
     const result = await window.electronAPI.scanDownloads()
     setFiles(result)
+    setScanned(true)
     setLoading(false)
   }
 
-  const totalMB = files.reduce((sum, f) => sum + f.sizeInMB, 0).toFixed(1)
-  const largeCount = files.filter(f => f.isLarge).length
+  // ─── DERIVED DATA ────────────────────────────────────────
+  const categories = ['All', ...new Set(files.map(f => f.category))]
 
+  const displayed = filter === 'All'
+    ? files
+    : files.filter(f => f.category === filter)
+
+  const totalMB    = files.reduce((sum, f) => sum + f.sizeInMB, 0)
+  const largeFiles = files.filter(f => f.isLarge)
+  const largestFile = files[0]  // already sorted largest first from Day 3
+
+  // ─── RENDER ──────────────────────────────────────────────
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '900px' }}>
-      <h1>🐝 HiveClean</h1>
+    <div className="flex h-screen bg-gray-50 text-gray-800 font-sans">
 
-      <button
-        onClick={handleScan}
-        disabled={loading}
-        style={{ padding: '8px 20px', cursor: 'pointer', marginBottom: '1rem' }}
-      >
-        {loading ? 'Scanning...' : 'Scan Downloads'}
-      </button>
+      {/* ── SIDEBAR ── */}
+      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col py-6 px-4 gap-6 shrink-0">
 
-      {/* summary strip */}
-      {files.length > 0 && (
-        <div style={{ display: 'flex', gap: '2rem', marginBottom: '1rem', color: '#555' }}>
-          <span>{files.length} files</span>
-          <span>{totalMB} MB total</span>
-          {largeCount > 0 && (
-            <span style={{ color: '#dc2626', fontWeight: 600 }}>
-              ⚠ {largeCount} large file{largeCount > 1 ? 's' : ''}
-            </span>
-          )}
+        {/* Logo */}
+        <div className="flex items-center gap-2 px-2">
+          <span className="text-2xl">🐝</span>
+          <span className="font-bold text-lg tracking-tight">HiveClean</span>
         </div>
-      )}
 
-      {files.length > 0 && (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-          <thead>
-            <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-              <th style={{ textAlign: 'left', padding: '8px' }}>Name</th>
-              <th style={{ textAlign: 'left', padding: '8px' }}>Category</th>
-              <th style={{ textAlign: 'left', padding: '8px' }}>Size</th>
-              <th style={{ textAlign: 'left', padding: '8px' }}>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {files.map((file) => (
-              <tr
-                key={file.path}
-                style={{
-                  borderBottom: '1px solid #f3f4f6',
-                  // highlight large files with a subtle red background
-                  background: file.isLarge ? '#fff1f2' : 'transparent',
-                }}
+        {/* Scan button */}
+        <button
+          onClick={handleScan}
+          disabled={loading}
+          className="w-full bg-amber-400 hover:bg-amber-500 disabled:opacity-50 
+                     text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+        >
+          {loading ? 'Scanning...' : '⚡ Scan Downloads'}
+        </button>
+
+        {/* Category filter list */}
+        {scanned && (
+          <nav className="flex flex-col gap-1">
+            <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">
+              Filter
+            </p>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
+                  ${filter === cat
+                    ? 'bg-amber-50 text-amber-700 font-semibold'
+                    : 'text-gray-600 hover:bg-gray-100'
+                  }`}
               >
-                <td style={{ padding: '8px', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {file.name}
-                </td>
-                <td style={{ padding: '8px' }}>
-                  <CategoryBadge category={file.category} />
-                </td>
-                <td style={{ padding: '8px', color: file.isLarge ? '#dc2626' : 'inherit', fontWeight: file.isLarge ? 600 : 400 }}>
-                  {file.sizeInMB} MB
-                </td>
-                <td style={{ padding: '8px', color: '#6b7280' }}>
-                  {new Date(file.createdAt).toLocaleDateString()}
-                </td>
-              </tr>
+                {CATEGORY_ICONS[cat] ?? '📂'} {cat}
+                <span className="float-right text-xs text-gray-400">
+                  {cat === 'All'
+                    ? files.length
+                    : files.filter(f => f.category === cat).length}
+                </span>
+              </button>
             ))}
-          </tbody>
-        </table>
-      )}
+          </nav>
+        )}
+      </aside>
+
+      {/* ── MAIN CONTENT ── */}
+      <main className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+
+        {/* Header */}
+        <div>
+          <h1 className="text-xl font-bold">Downloads Cleaner</h1>
+          <p className="text-sm text-gray-500">
+            {scanned
+              ? `${files.length} files found in your Downloads folder`
+              : 'Click "Scan Downloads" to get started'}
+          </p>
+        </div>
+
+        {/* ── STAT CARDS ── */}
+        {scanned && (
+          <div className="grid grid-cols-3 gap-4">
+            <StatCard
+              label="Total Files"
+              value={files.length}
+              sub="in Downloads folder"
+              accent="bg-white border border-gray-200"
+            />
+            <StatCard
+              label="Total Size"
+              value={`${totalMB.toFixed(1)} MB`}
+              sub="across all files"
+              accent="bg-white border border-gray-200"
+            />
+            <StatCard
+              label="Large Files"
+              value={largeFiles.length}
+              sub={largeFiles.length > 0 ? `Largest: ${largestFile?.sizeInMB} MB` : 'Nothing over 50MB'}
+              accent={largeFiles.length > 0
+                ? 'bg-red-50 border border-red-200 text-red-700'
+                : 'bg-white border border-gray-200'}
+            />
+          </div>
+        )}
+
+        {/* ── FILE TABLE ── */}
+        {scanned && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+
+            {/* Table header */}
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+              <span className="text-sm font-semibold text-gray-700">
+                {filter === 'All' ? 'All Files' : filter} —{' '}
+                <span className="font-normal text-gray-400">{displayed.length} items</span>
+              </span>
+            </div>
+
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400">
+                <tr>
+                  <th className="text-left px-4 py-2">Name</th>
+                  <th className="text-left px-4 py-2">Category</th>
+                  <th className="text-left px-4 py-2">Size</th>
+                  <th className="text-left px-4 py-2">Created</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {displayed.map((file) => (
+                  <tr
+                    key={file.path}
+                    className={`hover:bg-gray-50 transition-colors
+                      ${file.isLarge ? 'bg-red-50 hover:bg-red-100' : ''}`}
+                  >
+                    {/* Name */}
+                    <td className="px-4 py-2.5 max-w-xs">
+                      <span className="block truncate font-medium text-gray-700">
+                        {file.name}
+                      </span>
+                      <span className="text-xs text-gray-400">{file.extension || 'no ext'}</span>
+                    </td>
+
+                    {/* Category */}
+                    <td className="px-4 py-2.5">
+                      <CategoryBadge category={file.category} />
+                    </td>
+
+                    {/* Size */}
+                    <td className={`px-4 py-2.5 font-medium
+                      ${file.isLarge ? 'text-red-600' : 'text-gray-600'}`}>
+                      {file.sizeInMB} MB
+                      {file.isLarge && (
+                        <span className="ml-1 text-xs text-red-400">⚠ large</span>
+                      )}
+                    </td>
+
+                    {/* Date */}
+                    <td className="px-4 py-2.5 text-gray-400">
+                      {new Date(file.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Empty state */}
+            {displayed.length === 0 && (
+              <div className="text-center py-12 text-gray-400">
+                No files in this category
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Empty state before scan */}
+        {!scanned && (
+          <div className="flex-1 flex flex-col items-center justify-center text-gray-300 gap-3">
+            <span className="text-6xl">🐝</span>
+            <p className="text-lg font-medium">Ready to clean your Downloads</p>
+            <p className="text-sm">Hit the scan button to see what's in there</p>
+          </div>
+        )}
+
+      </main>
     </div>
   )
 }
-
-export default App
