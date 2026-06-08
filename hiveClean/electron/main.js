@@ -51,12 +51,20 @@ ipcMain.handle('scan-downloads', async () => {
   return files
 })
 
+
 // ─── WINDOW ─────────────────────────────────────────────── ← createWindow is clean
 function createWindow() {
   const win = new BrowserWindow({
     title: 'HiveClean',
     width: 1100,
     height: 750,
+    icon: path.join(__dirname, '../src/assets/icon.png'),
+    titleBarStyle: 'hidden',        // hides the default titlebar
+    titleBarOverlay: {
+    color: '#fbbf24',             // amber-400 — matches your app theme
+    symbolColor: '#ffffff',       // color of the min/max/close buttons
+    height: 20,                   // height of the titlebar in px
+  },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
