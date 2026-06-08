@@ -34,7 +34,7 @@ function CategoryBadge({ category }) {
       {CATEGORY_ICONS[category]} {category}
     </span>
   )
-}
+}  
 
 function StatCard({ label, value, sub, accent }) {
   return (
@@ -75,10 +75,10 @@ export default function App() {
 
   // ─── RENDER ──────────────────────────────────────────────
   return (
-    <div className="flex h-screen bg-gray-50 text-gray-800 font-sans">
+    <div className="flex h-screen bg-amber-50 text-gray-800 font-sans">
 
       {/* ── SIDEBAR ── */}
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col py-6 px-4 gap-6 shrink-0">
+      <aside className="w-56 bg-gray border-r border-gray-200 flex flex-col py-6 px-4 gap-6 shrink-0">
 
         {/* Logo */}
         <div className="flex items-center gap-2 px-2">
@@ -91,7 +91,7 @@ export default function App() {
           onClick={handleScan}
           disabled={loading}
           className="w-full bg-amber-400 hover:bg-amber-500 disabled:opacity-50 
-                     text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                     text-white font-bold py-4 px-2 rounded-lg transition-colors"
         >
           {loading ? 'Scanning...' : '⚡ Scan Downloads'}
         </button>
@@ -165,7 +165,7 @@ export default function App() {
 
         {/* ── FILE TABLE ── */}
         {scanned && (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-browen rounded-xl border border-gray-200 overflow-hidden">
 
             {/* Table header */}
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
