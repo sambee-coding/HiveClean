@@ -33,16 +33,18 @@ function CategoryBadge({ category })
   const colors = CATEGORY_COLORS[category] || CATEGORY_COLORS.Other 
   return (
     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${colors}`}>
-    //here we render the icon and the category name inside te badge 
+
       {CATEGORY_ICONS[category]} {category}
     </span>
   )
 }  
 
 function StatCard({ label, value, sub, accent })
- // this is reusable component for the statics cards at the top, it takes a label, a value, an optional subtext and 
- // an accent color for the card background. it renders a simple card with the label, value and subtext styled accordingly.
-{
+
+ //this is reusable component for the statics cards at the top, it takes a label, a value, an optional subtext and 
+  //an accent color for the card background. it renders a simple card with the label, value and subtext styled accordingly.
+
+ {
   return (
     <div className={`rounded-xl p-4 flex flex-col gap-1 ${accent}`}>
       <span className="text-xs font-medium uppercase tracking-wide opacity-70">{label}</span>
@@ -63,7 +65,7 @@ export default function App() {
   async function handleScan() {
     setLoading(true)
     const result = await window.electronAPI.scanDownloads()
-    setFiles(result)  // → files is now [{name, sizeInMB, category...}, ...]
+    setFiles(result)  
     setScanned(true)
     setLoading(false)
   }
@@ -99,7 +101,7 @@ export default function App() {
           className="w-full bg-amber-400 hover:bg-amber-500 disabled:opacity-50 
                      text-white font-bold py-4 px-2 rounded-lg transition-colors"
         >
-          {loading ? 'Scanning...' : '⚡ Scan Downloads'} // the button  text xhanges to indicate loading state
+          {loading ? 'Scanning...' : '⚡ Scan Downloads'} {/* the button  text xhanges to indicate loading state*/}
         </button>
 
         {/* Category filter list */}
@@ -111,7 +113,7 @@ export default function App() {
             {categories.map(cat => (
               <button
                 key={cat}
-                onClick={() => setFilter(cat)} // cat could be 'PDF', 'Image', 'Video', etc.
+                onClick={() => setFilter(cat)} 
                 className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
                   ${filter === cat
                     ? 'bg-amber-50 text-amber-700 font-semibold'
@@ -171,7 +173,7 @@ export default function App() {
 
         {/* ── FILE TABLE ── */}
         {scanned && (
-          <div className="bg-browen rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
 
             {/* Table header */}
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
