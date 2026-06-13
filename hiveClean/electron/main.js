@@ -30,7 +30,7 @@ ipcMain.handle('scan-downloads', async () => {
     .map((name) => {
       const fullPath = path.join(downloadsPath, name)
       const stat = fs.statSync(fullPath)
-      if (!stat.isFile()) return null
+      if (!stat.isFile()) return null;
 
       const ext = path.extname(name)
       const sizeInMB = stat.size / (1024 * 1024)
