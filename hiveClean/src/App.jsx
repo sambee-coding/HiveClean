@@ -60,6 +60,7 @@ export default function App() {
   const [loading, setLoading]   = useState(false)
   const [filter, setFilter]     = useState('All')
   const [scanned, setScanned]   = useState(false)
+  
 
   // ─── SCAN ───────────────────────────────────────────────
   async function handleScan() {
@@ -205,6 +206,11 @@ export default function App() {
                         {file.name}
                       </span>
                       <span className="text-xs text-gray-400">{file.extension || 'no ext'}</span>
+              {file.isDuplicate && (
+                     <div className="text-red-600 text-xs">
+                            ⚠️ Duplicate of: {file.duplicateOf}
+                       </div>
+                     )}       
                     </td>
 
                     {/* Category */}

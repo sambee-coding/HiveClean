@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
+const crypto = require('crypto')
 
 // ─── FILE CATEGORY DETECTOR ─────────────────────────────── ← top level ✓
 function getCategory(ext) {
@@ -47,7 +48,31 @@ ipcMain.handle('scan-downloads', async () => {
     })
     .filter(Boolean)
 
-  files.sort((a, b) => b.sizeInMB - a.sizeInMB)
+    files.sort((a,b) => b.sizeInMB - a.sizeInMB);
+   /*
+    const seen = {}
+   files.forEach(file => {
+      try {
+    const fileContent = fs.readFileSync(file.path)
+    const hash = crypto.createHash('sha256').update(fileContent).digest('hex')
+    if(seen[hash]){
+      file.isDuplicate = true
+      file.duplicateOf = seen[hash].name
+    }
+    else{
+      seen[hash] = file
+    }
+  } catch (err) {
+    console.error(`Couldn't read ${file.name}: ${err.message}`)
+  }
+});
+*/
+    const seen = {};
+    files.forEach(file =>{
+  file.isDuplicate = true
+  file.duplicateOf = null
+
+    });
   return files
 })
 
