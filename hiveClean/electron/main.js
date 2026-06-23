@@ -3,6 +3,9 @@ const path = require('path')
 const fs = require('fs')
 const os = require('os')
 const crypto = require('crypto')
+const trashModule = require('trash');
+const trash = trashModule.default;
+
 
 // ─── FILE CATEGORY DETECTOR ─────────────────────────────── ← top level ✓
 function getCategory(ext) {
@@ -99,6 +102,21 @@ ipcMain.handle('scan-downloads', async () => {
    }
   
   return files
+})
+
+ipcMain.handle('delete-files' , async(event,filePaths) =>{
+  try{
+    
+     await trash(filePaths);
+    const response = { success: true, deleted: filePaths.length }
+    return response;
+
+  }
+  catch(err){
+    const error = {success: false, error: err.message}
+    return error
+
+  }
 })
 
 

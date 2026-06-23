@@ -55,6 +55,9 @@ function StatCard({ label, value, sub, accent }) {
 }
 // ──────────────────────────────────────────────────────────
 
+
+
+
 export default function App() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -70,7 +73,28 @@ export default function App() {
     setFiles(result);
     setScanned(true);
     setLoading(false);
+  } 
+
+  async function handleDelete(){
+  const result = await window.electronAPI.deleteFiles(selectedFile);
+
+  // If success
+  if(result.success){
+    setFiles(files.filter(f => !selectedFile.includes(f.path)))
+  
+
+  //clear the selection
+  setSelectedFile([])
+
+  //close the modal 
+  setShowModal(false)
+
+  console.log(`${result.deleted} files deleted`)
   }
+ else {
+    console.error(result.error)
+  }
+}
 
   function handleCheckboxClick(filePath) {
     if (selectedFile.includes(filePath)) {
@@ -315,7 +339,7 @@ export default function App() {
             <p className="text-sm text-gray-600 mb-4">You are about to delete {selectedFile.length} files</p>
            <div className="flex gap-3">
               <button className="flex-1 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 " onClick={() => setShowModal(false)}>Cancel</button>
-              <button className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white" onClick={() => setShowModal(false)}>Delete</button>
+              <button className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white" onClick={() => handleDelete()}>Delete</button>
            </div>
             </div>
 
