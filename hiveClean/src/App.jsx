@@ -229,7 +229,7 @@ export default function App() {
                         }}
                       />
                     </div>
-                  </th>{" "}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -314,8 +314,8 @@ export default function App() {
             <h2 className="text-lg font-bold mb-4">Delete files?</h2>
             <p className="text-sm text-gray-600 mb-4">You are about to delete {selectedFile.length} files</p>
            <div className="flex gap-3">
-              <button className="fles-1 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 " onClick={() => setShowModal(false)}>Cancel</button>
-              <button className="fles-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white" onClick={() => setShowModal(true)}>Delete</button>
+              <button className="flex-1 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 " onClick={() => setShowModal(false)}>Cancel</button>
+              <button className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white" onClick={() => setShowModal(false)}>Delete</button>
            </div>
             </div>
 

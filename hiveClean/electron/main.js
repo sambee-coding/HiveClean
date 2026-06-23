@@ -67,12 +67,37 @@ ipcMain.handle('scan-downloads', async () => {
   }
 });
 */
+/*
     const seen = {};
     files.forEach(file =>{
   file.isDuplicate = true
   file.duplicateOf = null
 
     });
+    */
+     const seen = {}
+     
+     files.forEach((file) =>{
+      file.isDuplicate = false;
+      file.duplicateOf = null;
+     })
+
+   for (const  file of files){
+    try{
+    const content = await fs.promises.readFile(file.path);
+    const hash = crypto.createHash('sha256').update(content).digest('hex')
+     if(seen[hash]){
+    file.isDuplicate = true;
+    file.duplicateOf = seen[hash].name;
+   }
+   else{
+    seen[hash] = file;
+   }}
+   catch(err){
+    console.log(`couldn't read ${file.name}:${err.message}`)
+   }
+   }
+  
   return files
 })
 
