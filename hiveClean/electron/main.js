@@ -120,6 +120,32 @@ ipcMain.handle('delete-files' , async(event,filePaths) =>{
 })
 
 
+ipcMain.handle('save-deleted-files', async(event, deletedFiles) =>{
+
+  //saving the delted files 
+  const filePath = path.join(app.getPath('userData'), 'deletedFiles.json')
+  const data = fs.writeFileSync(filePath,JSON.stringify(deletedFiles));
+  return data;
+
+}
+
+)
+
+
+ipcMain.handle('load-deleted-files', async()=>{
+
+  //loading the deleted file from the save-delted-files
+  const filePath = path.join(app.getPath('userData'), 'deletedFiles.json')
+  try{
+  const raw = fs.readFileSync(filePath , 'utf-8')
+  return JSON.parse(raw)
+  }
+  catch(err){
+     console.error(`there is error ${err.message}`)
+     return []
+  
+} } )
+
 // ─── WINDOW ─────────────────────────────────────────────── ← createWindow is clean
 function createWindow() {
   const win = new BrowserWindow({
