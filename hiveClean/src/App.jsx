@@ -120,7 +120,7 @@ export default function App() {
 
   const totalMB = files.reduce((sum, f) => sum + f.sizeInMB, 0);
   const largeFiles = files.filter((f) => f.isLarge);
-  const largestFile = files[0]; // already sorted largest first from Day 3
+  const largestFile = files[0]; // already sorted largest file in main.js
   const buttonShow = selectedFile.length > 0;
   const selectAll =
     displayed.length > 0 &&
@@ -190,7 +190,7 @@ export default function App() {
             </p>
           </div>
           <button
-            className=" px-2 py-4 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
+            className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
             onClick={() => setShowRecycleBin(!showRecycleBin)}
           >
             {showRecycleBin ? "← Back" : "🗑 Recycle Bin"}
