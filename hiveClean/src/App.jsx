@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // ─── CONSTANTS ────────────────────────────────────────────
 const CATEGORY_COLORS = {
@@ -72,19 +72,31 @@ export default function App() {
     setScanned(true);
     setLoading(false);
   }
+  async function loadDeletedFiles() {
+    const result = await window.electronAPI.loadDeletedFiles();
+    setDeletedFiles(result);
+    
+  }
 
+  
+  useEffect(() =>{
+    loadDeletedFiles()
+  }, [])
   async function handleDelete() {
     const result = await window.electronAPI.deleteFiles(selectedFile);
 
     // If success
     if (result.success) {
-      setDeletedFiles([
+      const newDeletedFiles = [
         ...deletedFiles,
         ...files.filter((f) => selectedFile.includes(f.path)),
-      ]);
+      ];
+      setDeletedFiles(newDeletedFiles)
+      await window.electronAPI.saveDeletedFiles(newDeletedFiles);
       setFiles(files.filter((f) => !selectedFile.includes(f.path)));
       setSelectedFile([]);
       setShowModal(false);
+      
 
       console.log(`${result.deleted} files deleted`);
     } else {
