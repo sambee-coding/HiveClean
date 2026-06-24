@@ -107,24 +107,24 @@ ipcMain.handle('scan-downloads', async () => {
 ipcMain.handle('delete-files' , async(event,filePaths) =>{
   try{
     
-     await trash(filePaths);
+    await trash(filePaths);
     const response = { success: true, deleted: filePaths.length }
     return response;
 
   }
   catch(err){
     const error = {success: false, error: err.message}
-    return error
+    return error;
 
   }
 })
 
 
-ipcMain.handle('save-deleted-files', async(event, deletedFiles) =>{
+ipcMain.handle('save-deleted-files', async(event, newDeletedFiles) =>{
 
-  //saving the delted files 
+  //saving the deleted files 
   const filePath = path.join(app.getPath('userData'), 'deletedFiles.json')
-  const data = fs.writeFileSync(filePath,JSON.stringify(deletedFiles));
+  const data = fs.writeFileSync(filePath,JSON.stringify(newDeletedFiles));
   return data;
 
 }
