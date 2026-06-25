@@ -126,6 +126,7 @@ export default function App() {
     displayed.length > 0 &&
     displayed.every((f) => selectedFile.includes(f.path));
 
+  const totalFreedMB = deletedFiles.reduce((sum,file)=> sum + file.sizeInMB,0);
   // ─── RENDER ──────────────────────────────────────────────
   return (
     <div className="flex h-screen bg-amber-50 text-gray-800 font-sans">
@@ -197,21 +198,24 @@ export default function App() {
           </button>
         </div>
         {showRecycleBin && (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100">
+          <div className="bg-amber-100 rounded-xl border border-gray-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100 flex justify-between ">
               <span className="text-sm font-semibold text-gray-700">
-                🗑 Recycle Bin — {deletedFiles.length} files
+                🗑 Recycle Bin : {deletedFiles.length} files
+              </span>
+              <span className="text-sm font-semibold text-gray-800">
+                Total freed MB {totalFreedMB.toFixed(2)} MB
               </span>
             </div>
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400">
+            <table className="w-full text-sm bg-amber-100">
+              <thead className="bg-amber-950 text-xs uppercase tracking-wide text-gray-400">
                 <tr>
                   <th className="text-left px-4 py-2">Name</th>
                   <th className="text-left px-4 py-2">Category</th>
                   <th className="text-left px-4 py-2">Size</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-amber-200">
                 {deletedFiles.map((file) => (
                   <tr key={file.path}>
                     {/* your <td> cells here */}
@@ -273,9 +277,9 @@ export default function App() {
         {scanned && !showRecycleBin && (
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden ">
             {/* Table header */}
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-700">
-                {filter === "All" ? "All Files" : filter} —{" "}
+            <div className="px-4 py-3 border-b  border-gray-100 flex items-center justify-between">
+              <span className="text-sm font-semibold text-gray-700 ">
+                {filter === "All" ? "All Files" : filter} : {" "}
                 <span className="font-normal text-gray-400">
                   {displayed.length} items
                 </span>
