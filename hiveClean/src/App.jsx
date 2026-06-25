@@ -214,7 +214,7 @@ export default function App() {
           </div>
           <button
             className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
-            onClick={() => !setShowRecycleBin(false)}
+            onClick={() => setShowRecycleBin(!showRecycleBin)}
           >
             {showRecycleBin ? "← Back" : "🗑 Recycle Bin"}
           </button>
@@ -222,7 +222,7 @@ export default function App() {
 {showTelegramTable && (
             <button
             className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
-            onClick={() => !setShowTelegramTable(!scanned)}
+            onClick={() => setShowTelegramTable(false)}
           >
             {showTelegramTable? "← Back" : " Telegram Files"}
           </button>
@@ -274,7 +274,7 @@ export default function App() {
         )}
 
         {/* ── STAT CARDS ── */}
-        {scanned && !showRecycleBin && (
+        {scanned && !showRecycleBin && !showTelegramTable &&(
           <div className="grid grid-cols-3 gap-4">
             <StatCard
               label="Total Files"
