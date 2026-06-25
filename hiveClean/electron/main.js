@@ -105,8 +105,7 @@ ipcMain.handle('scan-downloads', async () => {
 })
 
 ipcMain.handle('scan-telegram' , async() =>{
-  const telegramPath = path.join(app.getPath('appData') , 'Telegram Desktop' , 'Downloads')
-
+const telegramPath = path.join(os.homedir(), 'Downloads', '38833FF26BA1D.UnigramPreview_g9c9v27vpyspw!App')
   if(fs.existsSync(telegramPath)){
     const enteries = fs.readdirSync(telegramPath);
     const files = enteries.map((name) =>{

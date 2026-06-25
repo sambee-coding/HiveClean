@@ -64,7 +64,20 @@ export default function App() {
   const [showModal, setShowModal] = useState(false);
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [showRecycleBin, setShowRecycleBin] = useState(false);
+  const [telegramFiles, setTelegramFiles] = useState([]);
+  const [telegramScanned, setTelegramScanned] = useState(false);
+  const [showTelegramTable, setShowTelegramTable] =useState(false);
   // ─── SCAN ───────────────────────────────────────────────
+
+  async function handleTelegramScan() {
+    setLoading(true);
+    const result = await window.electronAPI.scanTelegram();
+    console.log("Telegram result:", result);
+    setTelegramFiles(result);
+    setShowTelegramTable(true);
+    setTelegramScanned(true);
+    setLoading(false);
+  }
   async function handleScan() {
     setLoading(true);
     const result = await window.electronAPI.scanDownloads();
@@ -75,13 +88,11 @@ export default function App() {
   async function loadDeletedFiles() {
     const result = await window.electronAPI.loadDeletedFiles();
     setDeletedFiles(result);
-    
   }
 
-  
-  useEffect(() =>{
-    loadDeletedFiles()
-  }, [])
+  useEffect(() => {
+    loadDeletedFiles();
+  }, []);
   async function handleDelete() {
     const result = await window.electronAPI.deleteFiles(selectedFile);
 
@@ -91,12 +102,11 @@ export default function App() {
         ...deletedFiles,
         ...files.filter((f) => selectedFile.includes(f.path)),
       ];
-      setDeletedFiles(newDeletedFiles)
+      setDeletedFiles(newDeletedFiles);
       await window.electronAPI.saveDeletedFiles(newDeletedFiles);
       setFiles(files.filter((f) => !selectedFile.includes(f.path)));
       setSelectedFile([]);
       setShowModal(false);
-      
 
       console.log(`${result.deleted} files deleted`);
     } else {
@@ -126,7 +136,10 @@ export default function App() {
     displayed.length > 0 &&
     displayed.every((f) => selectedFile.includes(f.path));
 
-  const totalFreedMB = deletedFiles.reduce((sum,file)=> sum + file.sizeInMB,0);
+  const totalFreedMB = deletedFiles.reduce(
+    (sum, file) => sum + file.sizeInMB,
+    0,
+  );
   // ─── RENDER ──────────────────────────────────────────────
   return (
     <div className="flex h-screen bg-amber-50 text-gray-800 font-sans">
@@ -148,6 +161,15 @@ export default function App() {
           {loading ? "Scanning..." : "⚡ Scan Downloads"}{" "}
           {/* the button  text xhanges to indicate loading state*/}
         </button>
+        {scanned && (
+          <button
+            onClick={handleTelegramScan}
+            disabled={loading}
+            className="px-2 py-4 bg-blue-300 text-black text-sm font-semibold rounded-2xl hover:bg-blue-200"
+          >
+            {loading ? "Scanning..." : "⚡ Scan Telegram"} {""}
+          </button>
+        )}
 
         {/* Category filter list */}
         {scanned && !showRecycleBin && (
@@ -192,11 +214,21 @@ export default function App() {
           </div>
           <button
             className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
-            onClick={() => setShowRecycleBin(!showRecycleBin)}
+            onClick={() => !setShowRecycleBin(false)}
           >
             {showRecycleBin ? "← Back" : "🗑 Recycle Bin"}
           </button>
+
+{showTelegramTable && (
+            <button
+            className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
+            onClick={() => !setShowTelegramTable(!scanned)}
+          >
+            {showTelegramTable? "← Back" : " Telegram Files"}
+          </button>
+          )}
         </div>
+
         {showRecycleBin && (
           <div className="bg-amber-100 rounded-xl border border-gray-200 overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 flex justify-between ">
@@ -274,12 +306,12 @@ export default function App() {
         )}
 
         {/* ── FILE TABLE ── */}
-        {scanned && !showRecycleBin && (
+        {scanned && !showRecycleBin && !showTelegramTable && (
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden ">
             {/* Table header */}
             <div className="px-4 py-3 border-b  border-gray-100 flex items-center justify-between">
               <span className="text-sm font-semibold text-gray-700 ">
-                {filter === "All" ? "All Files" : filter} : {" "}
+                {filter === "All" ? "All Files" : filter} :{" "}
                 <span className="font-normal text-gray-400">
                   {displayed.length} items
                 </span>
@@ -385,6 +417,89 @@ export default function App() {
           </div>
         )}
 
+        {telegramScanned && !showRecycleBin && showTelegramTable && (
+          <div className="bg-white rounded-xl border border-blue-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-blue-100">
+              <span className="text-sm font-semibold text-blue-700">
+                📱 Telegram Downloads — {telegramFiles.length} files
+              </span>
+            </div>
+
+            {/* table with telegramFiles.map(...) */}
+
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400">
+                <tr>
+                  <th className="text-left px-4 py-2">Name</th>
+                  <th className="text-left px-4 py-2">Category</th>
+                  <th className="text-left px-4 py-2">Size</th>
+                  <th className="text-left px-1.5 py-2">Created</th>
+                  <th className="text-left px-1 py-2 w-12">
+                    <div className="flex items-center gap-1">
+                      <span>All</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {telegramFiles.map((file) => (
+                  
+                  <tr
+                    key={file.path}
+                    className={`hover:bg-gray-50 transition-colors
+                      ${file.isLarge ? "bg-red-50 hover:bg-red-100" : ""}`}
+                  >
+                    {/* Name */}
+                    <td className="px-4 py-2.5 max-w-xs">
+                      <span className="block truncate font-medium text-gray-700">
+                        {file.name}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {file.extension || "no ext"}
+                      </span>
+                      {file.isDuplicate && (
+                        <div className="text-red-600 text-xs">
+                          ⚠️ Duplicate of: {file.duplicateOf}
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Category */}
+                    <td className="px-4 py-2.5">
+                      <CategoryBadge category={file.category} />
+                    </td>
+
+                    {/* Size */}
+                    <td
+                      className={`px-4 py-2.5 font-medium
+                      ${file.isLarge ? "text-red-600" : "text-gray-600"}`}
+                    >
+                      {file.sizeInMB} MB
+                      {file.isLarge && (
+                        <span className="ml-1 text-xs text-red-400">
+                          ⚠ large
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Date */}
+                    <td className="px-4 py-2.5 text-gray-400">
+                      {new Date(file.createdAt).toLocaleDateString()}
+                    </td>
+                    {/*selcted file*/}
+                    <td className="px-4 py-2.5">
+                      <input
+                        type="checkbox"
+                        checked={selectedFile.includes(file.path)}
+                        onChange={() => handleCheckboxClick(file.path)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {/* Empty state before scan */}
         {!scanned && (
           <div className="flex-1 flex flex-col items-center justify-center text-gray-300 gap-3">
