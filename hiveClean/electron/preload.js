@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteFiles: (filePaths) => ipcRenderer.invoke('delete-files', filePaths),
   saveDeletedFiles : (filePaths) => ipcRenderer.invoke('save-deleted-files', filePaths),
   loadDeletedFiles : () => ipcRenderer.invoke('load-deleted-files'),
+  scanTelegram: () => ipcRenderer.invoke('scan-telegram'),
 })
 
 

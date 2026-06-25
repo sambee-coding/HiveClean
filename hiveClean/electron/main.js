@@ -104,6 +104,65 @@ ipcMain.handle('scan-downloads', async () => {
   return files
 })
 
+ipcMain.handle('scan-telegram' , async() =>{
+  const telegramPath = path.join(app.getPath('appData') , 'Telegram Desktop' , 'Downloads')
+
+  if(fs.existsSync(telegramPath)){
+    const enteries = fs.readdirSync(telegramPath);
+    const files = enteries.map((name) =>{
+      const fullPath = path.join(telegramPath, name)
+      const stat = fs.statSync(fullPath)
+  
+      if(!stat.isFile()) return null
+      const ext = path.extname(name)
+      const sizeInMB = stat.size / (1024 * 1024)
+   
+      return{
+          name,
+        sizeInMB: parseFloat(sizeInMB.toFixed(2)),
+        createdAt: stat.birthtime,
+        path: fullPath,
+        extension: ext,
+        category: getCategory(ext),
+        isLarge: sizeInMB > 50,
+      }
+    })
+    .filter(Boolean)
+
+    files.sort((a,b) => b.sizeInMB - a.sizeInMB);
+
+
+     const seen = {}
+     
+     files.forEach((file) =>{
+      file.isDuplicate = false;
+      file.duplicateOf = null;
+     })
+
+   for (const  file of files){
+    try{
+    const content = await fs.promises.readFile(file.path);
+    const hash = crypto.createHash('sha256').update(content).digest('hex')
+     if(seen[hash]){
+    file.isDuplicate = true;
+    file.duplicateOf = seen[hash].name;
+   }
+   else{
+    seen[hash] = file;
+   }}
+   catch(err){
+    console.log(`couldn't read ${file.name}:${err.message}`)
+   }
+   }
+    return files
+  }
+  else{
+    return []
+  }
+    })
+
+
+
 ipcMain.handle('delete-files' , async(event,filePaths) =>{
   try{
     
