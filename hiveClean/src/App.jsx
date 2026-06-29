@@ -39,18 +39,6 @@ function CategoryBadge({ category }) {
   );
 }
 
-//_____ category for telegram______________
-
-function CategoryBadge2Telegram({category2Tele}){
-  const colors =CATEGORY_COLORS[category2Tele] || CATEGORY_COLORS.Other;
-  return (
-    <span 
-    className="{`text-xs font-semibold px-2 py-0.5 rounded-full ${colors}`"
-    >
-      {CATEGORY_ICONS[category2Tele]}  {category2Tele}
-    </span>
-  );
-}
 
 
 function StatCard({ label, value, sub, accent }) {
@@ -81,6 +69,7 @@ export default function App() {
   const [telegramFiles, setTelegramFiles] = useState([]);
   const [telegramScanned, setTelegramScanned] = useState(false);
   const [showTelegramTable, setShowTelegramTable] =useState(false);
+  const [telegramFilter, setTelegramFilter] = useState('All');
   // ─── SCAN ───────────────────────────────────────────────
 
   async function handleTelegramScan() {
@@ -138,9 +127,11 @@ export default function App() {
 
   // ─── DERIVED DATA ────────────────────────────────────────
   const categories = ["All", ...new Set(files.map((f) => f.category))];
+  const telegramCategories = ["All", ...new Set(telegramFiles.map((f) => f.category))]
 
   const displayed =
     filter === "All" ? files : files.filter((f) => f.category === filter);
+  const telegramDisplayed = telegramFilter === 'All' ? telegramFiles: telegramFiles.filter((f) => f.category === telegramFilter);
 
   const totalMB = files.reduce((sum, f) => sum + f.sizeInMB, 0);
   const largeFiles = files.filter((f) => f.isLarge);
@@ -185,63 +176,41 @@ export default function App() {
           </button>
         )}
 
-        {/* Category filter list */}
-        {scanned && !showRecycleBin && (
-          <nav className="flex flex-col gap-1">
-            <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">
-              Filter
-            </p>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFilter(cat)}
-                className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
-                  ${
-                    filter === cat
-                      ? "bg-amber-50 text-amber-700 font-semibold"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                {CATEGORY_ICONS[cat] ?? "📂"} {cat}
-                <span className="float-right text-xs text-gray-400">
-                  {cat === "All"
-                    ? files.length
-                    : files.filter((f) => f.category === cat).length}
-                </span>
-              </button>
-            ))}
-          </nav>
-        )}
-      </aside>
-      
-      {telegramScanned && showTelegramTable && (
+        {/* Category filter list — Downloads */}
+{scanned && !showRecycleBin && !showTelegramTable && (
+  <nav className="flex flex-col gap-1">
+    <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">Filter</p>
+    {categories.map((cat) => (
+      <button key={cat} onClick={() => setFilter(cat)}
+        className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
+          ${filter === cat ? "bg-amber-50 text-amber-700 font-semibold" : "text-gray-600 hover:bg-gray-100"}`}>
+        {CATEGORY_ICONS[cat] ?? "📂"} {cat}
+        <span className="float-right text-xs text-gray-400">
+          {cat === "All" ? files.length : files.filter((f) => f.category === cat).length}
+        </span>
+      </button>
+    ))}
+  </nav>
+)}
 
-          <nav className="flex flex-col gap-1">
-            <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">
-              Filter
-            </p>
-            {categories2Telegram.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFilter(cat)}
-                className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
-                  ${
-                    filter === cat
-                      ? "bg-amber-50 text-amber-700 font-semibold"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-              >
-                {CATEGORY_ICONS[cat] ?? "📂"} {cat}
-                <span className="float-right text-xs text-gray-400">
-                  {cat === "All"
-                    ? files.length
-                    : files.filter((f) => f.categories2Telegram === cat).length}
-                </span>
-              </button>
-            ))}
-          </nav>
-        )}
-      
+{/* Category filter list — Telegram */}
+{telegramScanned && showTelegramTable && (
+  <nav className="flex flex-col gap-1">
+    <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">Filter</p>
+    {telegramCategories.map((cat) => (
+      <button key={cat} onClick={() => setTelegramFilter(cat)}
+        className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
+          ${telegramFilter === cat ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"}`}>
+        {CATEGORY_ICONS[cat] ?? "📂"} {cat}
+        <span className="float-right text-xs text-gray-400">
+          {cat === "All" ? telegramFiles.length : telegramFiles.filter((f) => f.category === cat).length}
+        </span>
+      </button>
+    ))}
+  </nav>
+)}
+
+</aside> 
     
       {/* ── MAIN CONTENT ── */}
       <main className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
@@ -271,6 +240,8 @@ export default function App() {
           </button>
           )}
         </div>
+
+        
 
         {showRecycleBin && (
           <div className="bg-amber-100 rounded-xl border border-gray-200 overflow-hidden">
@@ -464,7 +435,7 @@ export default function App() {
           <div className="bg-white rounded-xl border border-blue-200 overflow-hidden">
             <div className="px-4 py-3 border-b border-blue-100">
               <span className="text-sm font-semibold text-blue-700">
-                📱 Telegram Downloads — {telegramFiles.length} files
+                📱 Telegram Downloads : {telegramFiles.length} files
               </span>
             </div>
 
@@ -485,7 +456,7 @@ export default function App() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {telegramFiles.map((file) => (
+                {telegramDisplayed.map((file) => (
                   
                   <tr
                     key={file.path}

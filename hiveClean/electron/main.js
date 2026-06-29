@@ -32,31 +32,7 @@ function getCategory(ext) {
   }
   return "Other";
 }
-function getCategoryForTelegram(ext) {
-  const categories2Telegram = {
-    Image: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".bmp", ".ico"],
-    Video: [".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv", ".webm"],
-    Audio: [".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a"],
-    PDF: [".pdf"],
-    Document: [
-      ".doc",
-      ".docx",
-      ".xls",
-      ".xlsx",
-      ".ppt",
-      ".pptx",
-      ".txt",
-      ".csv",
-    ],
-    Archive: [".zip", ".rar", ".7z", ".tar", ".gz"],
-    Code: [".js", ".ts", ".jsx", ".tsx", ".py", ".html", ".css", ".json"],
-    Installer: [".exe", ".msi", ".dmg", ".deb"],
-  };
-  for (const [category2Tele, extensions] of Object.entries(categories)) {
-    if (extensions.includes(ext.toLowerCase())) return category2Tele;
-  }
-  return "Other";
-}
+
 // ─── IPC HANDLER ────────────────────────────────────────── ← top level ✓
 ipcMain.handle("scan-downloads", async () => {
   const downloadsPath = path.join(os.homedir(), "Downloads");
