@@ -55,6 +55,7 @@ ipcMain.handle("scan-downloads", async () => {
         extension: ext,
         category: getCategory(ext),
         isLarge: sizeInMB > 50,
+        source:'downloads',
       };
     })
     .filter(Boolean);
@@ -136,6 +137,7 @@ ipcMain.handle("scan-telegram", async () => {
           extension: ext,
           category: getCategory(ext),
           isLarge: sizeInMB > 50,
+          source: 'telegram',
         };
       })
       .filter(Boolean);

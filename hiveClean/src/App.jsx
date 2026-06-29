@@ -39,8 +39,6 @@ function CategoryBadge({ category }) {
   );
 }
 
-
-
 function StatCard({ label, value, sub, accent }) {
   //this is reusable component for the statics cards at the top, it takes a label, a value, an optional subtext and
   //an accent color for the card background. it renders a simple card with the label, value and subtext styled accordingly.
@@ -68,8 +66,8 @@ export default function App() {
   const [showRecycleBin, setShowRecycleBin] = useState(false);
   const [telegramFiles, setTelegramFiles] = useState([]);
   const [telegramScanned, setTelegramScanned] = useState(false);
-  const [showTelegramTable, setShowTelegramTable] =useState(false);
-  const [telegramFilter, setTelegramFilter] = useState('All');
+  const [showTelegramTable, setShowTelegramTable] = useState(false);
+  const [telegramFilter, setTelegramFilter] = useState("All");
   // ─── SCAN ───────────────────────────────────────────────
 
   async function handleTelegramScan() {
@@ -128,7 +126,9 @@ export default function App() {
       ];
       setDeletedFiles(newDeletedFiles);
       await window.electronAPI.saveDeletedFiles(newDeletedFiles);
-      setTelegramFiles(telegramFiles.filter((f) => !selectedFile.includes(f.path)));
+      setTelegramFiles(
+        telegramFiles.filter((f) => !selectedFile.includes(f.path)),
+      );
       setSelectedFile([]);
       setShowModal(false);
 
@@ -147,11 +147,17 @@ export default function App() {
 
   // ─── DERIVED DATA ────────────────────────────────────────
   const categories = ["All", ...new Set(files.map((f) => f.category))];
-  const telegramCategories = ["All", ...new Set(telegramFiles.map((f) => f.category))]
+  const telegramCategories = [
+    "All",
+    ...new Set(telegramFiles.map((f) => f.category)),
+  ];
 
   const displayed =
     filter === "All" ? files : files.filter((f) => f.category === filter);
-  const telegramDisplayed = telegramFilter === 'All' ? telegramFiles: telegramFiles.filter((f) => f.category === telegramFilter);
+  const telegramDisplayed =
+    telegramFilter === "All"
+      ? telegramFiles
+      : telegramFiles.filter((f) => f.category === telegramFilter);
 
   const totalMB = files.reduce((sum, f) => sum + f.sizeInMB, 0);
   const largeFiles = files.filter((f) => f.isLarge);
@@ -197,41 +203,54 @@ export default function App() {
         )}
 
         {/* Category filter list — Downloads */}
-{scanned && !showRecycleBin && !showTelegramTable && (
-  <nav className="flex flex-col gap-1">
-    <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">Filter</p>
-    {categories.map((cat) => (
-      <button key={cat} onClick={() => setFilter(cat)}
-        className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
-          ${filter === cat ? "bg-amber-50 text-amber-700 font-semibold" : "text-gray-600 hover:bg-gray-100"}`}>
-        {CATEGORY_ICONS[cat] ?? "📂"} {cat}
-        <span className="float-right text-xs text-gray-400">
-          {cat === "All" ? files.length : files.filter((f) => f.category === cat).length}
-        </span>
-      </button>
-    ))}
-  </nav>
-)}
+        {scanned && !showRecycleBin && !showTelegramTable && (
+          <nav className="flex flex-col gap-1">
+            <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">
+              Filter
+            </p>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
+          ${filter === cat ? "bg-amber-50 text-amber-700 font-semibold" : "text-gray-600 hover:bg-gray-100"}`}
+              >
+                {CATEGORY_ICONS[cat] ?? "📂"} {cat}
+                <span className="float-right text-xs text-gray-400">
+                  {cat === "All"
+                    ? files.length
+                    : files.filter((f) => f.category === cat).length}
+                </span>
+              </button>
+            ))}
+          </nav>
+        )}
 
-{/* Category filter list — Telegram */}
-{telegramScanned && showTelegramTable && (
-  <nav className="flex flex-col gap-1">
-    <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">Filter</p>
-    {telegramCategories.map((cat) => (
-      <button key={cat} onClick={() => setTelegramFilter(cat)}
-        className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
-          ${telegramFilter === cat ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"}`}>
-        {CATEGORY_ICONS[cat] ?? "📂"} {cat}
-        <span className="float-right text-xs text-gray-400">
-          {cat === "All" ? telegramFiles.length : telegramFiles.filter((f) => f.category === cat).length}
-        </span>
-      </button>
-    ))}
-  </nav>
-)}
+        {/* Category filter list — Telegram */}
+        {telegramScanned && showTelegramTable && (
+          <nav className="flex flex-col gap-1">
+            <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">
+              Filter
+            </p>
+            {telegramCategories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setTelegramFilter(cat)}
+                className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
+          ${telegramFilter === cat ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"}`}
+              >
+                {CATEGORY_ICONS[cat] ?? "📂"} {cat}
+                <span className="float-right text-xs text-gray-400">
+                  {cat === "All"
+                    ? telegramFiles.length
+                    : telegramFiles.filter((f) => f.category === cat).length}
+                </span>
+              </button>
+            ))}
+          </nav>
+        )}
+      </aside>
 
-</aside> 
-    
       {/* ── MAIN CONTENT ── */}
       <main className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
         {/* Header */}
@@ -251,17 +270,15 @@ export default function App() {
             {showRecycleBin ? "← Back" : "🗑 Recycle Bin"}
           </button>
 
-        {showTelegramTable && (
+          {showTelegramTable && (
             <button
-            className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
-            onClick={() => setShowTelegramTable(false)}
-          >
-            {showTelegramTable? "← Back" : " Telegram Files"}
-          </button>
+              className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
+              onClick={() => setShowTelegramTable(false)}
+            >
+              {showTelegramTable ? "← Back" : " Telegram Files"}
+            </button>
           )}
         </div>
-
-        
 
         {showRecycleBin && (
           <div className="bg-amber-100 rounded-xl border border-gray-200 overflow-hidden">
@@ -288,6 +305,9 @@ export default function App() {
                     <td className="px-4 py-2.5 max-w-xs">
                       <span className="block truncate font-medium text-gray-700">
                         {file.name}
+                        
+                        {file.source === 'telegram' && <div className="text-shadow-amber-950 font-mono">📱 Telegram file</div>}
+                        
                       </span>
                     </td>
                     <td className="px-4 py-2.5 max-w-xs">
@@ -308,7 +328,7 @@ export default function App() {
         )}
 
         {/* ── STAT CARDS ── */}
-        {scanned && !showRecycleBin && !showTelegramTable &&(
+        {scanned && !showRecycleBin && !showTelegramTable && (
           <div className="grid grid-cols-3 gap-4">
             <StatCard
               label="Total Files"
@@ -453,24 +473,21 @@ export default function App() {
 
         {telegramScanned && !showRecycleBin && showTelegramTable && (
           <div className="bg-white rounded-xl border border-blue-200 overflow-hidden">
-           
-
             {/* table with telegramFiles.map(...) */}
-            
-    <div className="px-4 py-3 border-b border-blue-100 flex items-center justify-between">
-  <span className="text-sm font-semibold text-blue-700">
-    📱 Telegram Downloads : {telegramFiles.length} files
-  </span>
-  {buttonShow && (
-    <button
-      className="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
-      onClick={() => setShowModal(true)}
-    >
-      🗑 Delete ({selectedFile.length})
-    </button>
-  )}
-</div>
 
+            <div className="px-4 py-3 border-b border-blue-100 flex items-center justify-between">
+              <span className="text-sm font-semibold text-blue-700">
+                📱 Telegram Downloads : {telegramFiles.length} files
+              </span>
+              {buttonShow && (
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                  onClick={() => setShowModal(true)}
+                >
+                  🗑 Delete ({selectedFile.length})
+                </button>
+              )}
+            </div>
 
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400">
@@ -488,7 +505,6 @@ export default function App() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {telegramDisplayed.map((file) => (
-                  
                   <tr
                     key={file.path}
                     className={`hover:bg-gray-50 transition-colors
@@ -571,7 +587,9 @@ export default function App() {
                 </button>
                 <button
                   className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
-                 onClick={() => showTelegramTable ? handleTelegramDelete() : handleDelete()}
+                  onClick={() =>
+                    showTelegramTable ? handleTelegramDelete() : handleDelete()
+                  }
                 >
                   Delete
                 </button>
