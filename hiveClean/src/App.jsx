@@ -117,6 +117,26 @@ export default function App() {
     }
   }
 
+  async function handleTelegramDelete() {
+    const result = await window.electronAPI.deleteFiles(selectedFile);
+
+    // If success
+    if (result.success) {
+      const newDeletedFiles = [
+        ...deletedFiles,
+        ...telegramFiles.filter((f) => selectedFile.includes(f.path)),
+      ];
+      setDeletedFiles(newDeletedFiles);
+      await window.electronAPI.saveDeletedFiles(newDeletedFiles);
+      setTelegramFiles(telegramFiles.filter((f) => !selectedFile.includes(f.path)));
+      setSelectedFile([]);
+      setShowModal(false);
+
+      console.log(`${result.deleted} files deleted`);
+    } else {
+      console.error(result.error);
+    }
+  }
   function handleCheckboxClick(filePath) {
     if (selectedFile.includes(filePath)) {
       setSelectedFile(selectedFile.filter((f) => f !== filePath));
@@ -433,13 +453,24 @@ export default function App() {
 
         {telegramScanned && !showRecycleBin && showTelegramTable && (
           <div className="bg-white rounded-xl border border-blue-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-blue-100">
-              <span className="text-sm font-semibold text-blue-700">
-                📱 Telegram Downloads : {telegramFiles.length} files
-              </span>
-            </div>
+           
 
             {/* table with telegramFiles.map(...) */}
+            
+    <div className="px-4 py-3 border-b border-blue-100 flex items-center justify-between">
+  <span className="text-sm font-semibold text-blue-700">
+    📱 Telegram Downloads : {telegramFiles.length} files
+  </span>
+  {buttonShow && (
+    <button
+      className="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+      onClick={() => setShowModal(true)}
+    >
+      🗑 Delete ({selectedFile.length})
+    </button>
+  )}
+</div>
+
 
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400">
@@ -540,7 +571,7 @@ export default function App() {
                 </button>
                 <button
                   className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
-                  onClick={() => handleDelete()}
+                 onClick={() => showTelegramTable ? handleTelegramDelete() : handleDelete()}
                 >
                   Delete
                 </button>
