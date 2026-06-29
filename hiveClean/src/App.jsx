@@ -39,6 +39,20 @@ function CategoryBadge({ category }) {
   );
 }
 
+//_____ category for telegram______________
+
+function CategoryBadge2Telegram({category2Tele}){
+  const colors =CATEGORY_COLORS[category2Tele] || CATEGORY_COLORS.Other;
+  return (
+    <span 
+    className="{`text-xs font-semibold px-2 py-0.5 rounded-full ${colors}`"
+    >
+      {CATEGORY_ICONS[category2Tele]}  {category2Tele}
+    </span>
+  );
+}
+
+
 function StatCard({ label, value, sub, accent }) {
   //this is reusable component for the statics cards at the top, it takes a label, a value, an optional subtext and
   //an accent color for the card background. it renders a simple card with the label, value and subtext styled accordingly.
@@ -199,7 +213,36 @@ export default function App() {
           </nav>
         )}
       </aside>
+      
+      {telegramScanned && showTelegramTable && (
 
+          <nav className="flex flex-col gap-1">
+            <p className="text-xs uppercase tracking-widest text-gray-400 px-2 mb-1">
+              Filter
+            </p>
+            {categories2Telegram.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
+                  ${
+                    filter === cat
+                      ? "bg-amber-50 text-amber-700 font-semibold"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+              >
+                {CATEGORY_ICONS[cat] ?? "📂"} {cat}
+                <span className="float-right text-xs text-gray-400">
+                  {cat === "All"
+                    ? files.length
+                    : files.filter((f) => f.categories2Telegram === cat).length}
+                </span>
+              </button>
+            ))}
+          </nav>
+        )}
+      
+    
       {/* ── MAIN CONTENT ── */}
       <main className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
         {/* Header */}
@@ -219,7 +262,7 @@ export default function App() {
             {showRecycleBin ? "← Back" : "🗑 Recycle Bin"}
           </button>
 
-{showTelegramTable && (
+        {showTelegramTable && (
             <button
             className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
             onClick={() => setShowTelegramTable(false)}
