@@ -174,11 +174,13 @@ export default function App() {
 
   //_____ derived data from telegram files________
 
-  const totalMBForTelegram = telegramFiles.reduce((sum,f) => sum + f.sizeInMB , 0)
+  const totalMBForTelegram = telegramFiles.reduce(
+    (sum, f) => sum + f.sizeInMB,
+    0,
+  );
   console.log(totalMBForTelegram);
-  const largeFilesTelegram = telegramFiles.filter((f) => f.isLarge)
-  const largestFileInTelegram = telegramFiles[0]
-
+  const largeFilesTelegram = telegramFiles.filter((f) => f.isLarge);
+  const largestFileInTelegram = telegramFiles[0];
 
   // ─── RENDER ──────────────────────────────────────────────
   return (
@@ -299,8 +301,9 @@ export default function App() {
                 Total freed MB {totalFreedMB.toFixed(2)} MB
               </span>
             </div>
+             <div className="max-h-[500px] overflow-y-auto">
             <table className="w-full text-sm bg-amber-100">
-              <thead className="bg-amber-950 text-xs uppercase tracking-wide text-gray-400">
+              <thead className="bg-amber-950 text-xs uppercase tracking-wide text-gray-400 sticky top-0">
                 <tr>
                   <th className="text-left px-4 py-2">Name</th>
                   <th className="text-left px-4 py-2">Category</th>
@@ -314,9 +317,12 @@ export default function App() {
                     <td className="px-4 py-2.5 max-w-xs">
                       <span className="block truncate font-medium text-gray-700">
                         {file.name}
-                        
-                        {file.source === 'telegram' && <div className="text-shadow-amber-950 font-mono">📱 Telegram file</div>}
-                        
+
+                        {file.source === "telegram" && (
+                          <div className="text-shadow-amber-950 font-mono">
+                            📱 Telegram file
+                          </div>
+                        )}
                       </span>
                     </td>
                     <td className="px-4 py-2.5 max-w-xs">
@@ -333,45 +339,41 @@ export default function App() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
-         {/* ── STAT CARDS FOR TELEGRAM TABLE ── */}
+        {/* ── STAT CARDS FOR TELEGRAM TABLE ── */}
 
-         {showTelegramTable && !showRecycleBin && (
-
+        {showTelegramTable && !showRecycleBin && (
           <div className="grid grid-cols-3 gap-4">
             <StatCard
-            label="Total Files From Telegram"
-            value={telegramFiles.length}
-            sub="In Telegram folder"
-            accent='bg-cyan-50 border border-amber-300 text-sm'
+              label="Total Files From Telegram"
+              value={telegramFiles.length}
+              sub="In Telegram folder"
+              accent="bg-cyan-50 border border-amber-300 text-sm"
             />
             <StatCard
-            label="Total Size"
-            value={`${totalMBForTelegram.toFixed(1)} MB`}
-            sub='across all files from telegram'
-            accent='bg-cyan-50 border border-amber-300 text-sm'
+              label="Total Size"
+              value={`${totalMBForTelegram.toFixed(1)} MB`}
+              sub="across all files from telegram"
+              accent="bg-cyan-50 border border-amber-300 text-sm"
             />
             <StatCard
-            label="Large Files From Telegram Downloads"
-            value={largeFilesTelegram.length}
-            sub={
-              largeFilesTelegram.length > 0
-              ? `Largest :${largestFileInTelegram?.sizeInMB} MB`
-              : "Nothing over 50MB"
-            }
-            accent={
-              largeFilesTelegram.length > 0
-              ? "bg-red-50 border-red-200 text-red-700"
-              : "bg-cyan-50 border-amber-300 text-sm"
-            }
+              label="Large Files From Telegram Downloads"
+              value={largeFilesTelegram.length}
+              sub={
+                largeFilesTelegram.length > 0
+                  ? `Largest :${largestFileInTelegram?.sizeInMB} MB`
+                  : "Nothing over 50MB"
+              }
+              accent={
+                largeFilesTelegram.length > 0
+                  ? "bg-red-50 border-red-200 text-red-700"
+                  : "bg-cyan-50 border-amber-300 text-sm"
+              }
             />
           </div>
-
-         )}
-
-
-
+        )}
 
         {/* ── STAT CARDS ── */}
         {scanned && !showRecycleBin && !showTelegramTable && (
@@ -425,88 +427,88 @@ export default function App() {
                 </button>
               )}
             </div>
-          <div className="max-h-[500px] overflow-y-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400 sticky top-0">
-                <tr>
-                  <th className="text-left px-4 py-2">Name</th>
-                  <th className="text-left px-4 py-2">Category</th>
-                  <th className="text-left px-4 py-2">Size</th>
-                  <th className="text-left px-1.5 py-2">Created</th>
-                  <th className="text-left px-1 py-2 w-12">
-                    <div className="flex items-center gap-1">
-                      <span>All</span>
-                      <input
-                        type="checkbox"
-                        checked={selectAll}
-                        onChange={() => {
-                          if (selectAll) {
-                            setSelectedFile([]);
-                          } else {
-                            setSelectedFile(displayed.map((f) => f.path));
-                          }
-                        }}
-                      />
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {displayed.map((file) => (
-                  <tr
-                    key={file.path}
-                    className={`hover:bg-gray-50 transition-colors
-                      ${file.isLarge ? "bg-red-50 hover:bg-red-100" : ""}`}
-                  >
-                    {/* Name */}
-                    <td className="px-4 py-2.5 max-w-xs">
-                      <span className="block truncate font-medium text-gray-700">
-                        {file.name}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        {file.extension || "no ext"}
-                      </span>
-                      {file.isDuplicate && (
-                        <div className="text-red-600 text-xs">
-                          ⚠️ Duplicate of: {file.duplicateOf}
-                        </div>
-                      )}
-                    </td>
-
-                    {/* Category */}
-                    <td className="px-4 py-2.5">
-                      <CategoryBadge category={file.category} />
-                    </td>
-
-                    {/* Size */}
-                    <td
-                      className={`px-4 py-2.5 font-medium
-                      ${file.isLarge ? "text-red-600" : "text-gray-600"}`}
-                    >
-                      {file.sizeInMB} MB
-                      {file.isLarge && (
-                        <span className="ml-1 text-xs text-red-400">
-                          ⚠ large
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Date */}
-                    <td className="px-4 py-2.5 text-gray-400">
-                      {new Date(file.createdAt).toLocaleDateString()}
-                    </td>
-                    {/*selcted file*/}
-                    <td className="px-4 py-2.5">
-                      <input
-                        type="checkbox"
-                        checked={selectedFile.includes(file.path)}
-                        onChange={() => handleCheckboxClick(file.path)}
-                      />
-                    </td>
+            <div className="max-h-[500px] overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400 sticky top-0">
+                  <tr>
+                    <th className="text-left px-4 py-2">Name</th>
+                    <th className="text-left px-4 py-2">Category</th>
+                    <th className="text-left px-4 py-2">Size</th>
+                    <th className="text-left px-1.5 py-2">Created</th>
+                    <th className="text-left px-1 py-2 w-12">
+                      <div className="flex items-center gap-1">
+                        <span>All</span>
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={() => {
+                            if (selectAll) {
+                              setSelectedFile([]);
+                            } else {
+                              setSelectedFile(displayed.map((f) => f.path));
+                            }
+                          }}
+                        />
+                      </div>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {displayed.map((file) => (
+                    <tr
+                      key={file.path}
+                      className={`hover:bg-gray-50 transition-colors
+                      ${file.isLarge ? "bg-red-50 hover:bg-red-100" : ""}`}
+                    >
+                      {/* Name */}
+                      <td className="px-4 py-2.5 max-w-xs">
+                        <span className="block truncate font-medium text-gray-700">
+                          {file.name}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {file.extension || "no ext"}
+                        </span>
+                        {file.isDuplicate && (
+                          <div className="text-red-600 text-xs">
+                            ⚠️ Duplicate of: {file.duplicateOf}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Category */}
+                      <td className="px-4 py-2.5">
+                        <CategoryBadge category={file.category} />
+                      </td>
+
+                      {/* Size */}
+                      <td
+                        className={`px-4 py-2.5 font-medium
+                      ${file.isLarge ? "text-red-600" : "text-gray-600"}`}
+                      >
+                        {file.sizeInMB} MB
+                        {file.isLarge && (
+                          <span className="ml-1 text-xs text-red-400">
+                            ⚠ large
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Date */}
+                      <td className="px-4 py-2.5 text-gray-400">
+                        {new Date(file.createdAt).toLocaleDateString()}
+                      </td>
+                      {/*selcted file*/}
+                      <td className="px-4 py-2.5">
+                        <input
+                          type="checkbox"
+                          checked={selectedFile.includes(file.path)}
+                          onChange={() => handleCheckboxClick(file.path)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
 
             {/* Empty state */}
@@ -535,77 +537,77 @@ export default function App() {
                 </button>
               )}
             </div>
-       <div className="max-h-[500px] overflow-y-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400 sticky top-0">
-                <tr>
-                  <th className="text-left px-4 py-2">Name</th>
-                  <th className="text-left px-4 py-2">Category</th>
-                  <th className="text-left px-4 py-2">Size</th>
-                  <th className="text-left px-1.5 py-2">Created</th>
-                  <th className="text-left px-1 py-2 w-12">
-                    <div className="flex items-center gap-1">
-                      <span>All</span>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {telegramDisplayed.map((file) => (
-                  <tr
-                    key={file.path}
-                    className={`hover:bg-gray-50 transition-colors
-                      ${file.isLarge ? "bg-red-50 hover:bg-red-100" : ""}`}
-                  >
-                    {/* Name */}
-                    <td className="px-4 py-2.5 max-w-xs">
-                      <span className="block truncate font-medium text-gray-700">
-                        {file.name}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        {file.extension || "no ext"}
-                      </span>
-                      {file.isDuplicate && (
-                        <div className="text-red-600 text-xs">
-                          ⚠️ Duplicate of: {file.duplicateOf}
-                        </div>
-                      )}
-                    </td>
-
-                    {/* Category */}
-                    <td className="px-4 py-2.5">
-                      <CategoryBadge category={file.category} />
-                    </td>
-
-                    {/* Size */}
-                    <td
-                      className={`px-4 py-2.5 font-medium
-                      ${file.isLarge ? "text-red-600" : "text-gray-600"}`}
-                    >
-                      {file.sizeInMB} MB
-                      {file.isLarge && (
-                        <span className="ml-1 text-xs text-red-400">
-                          ⚠ large
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Date */}
-                    <td className="px-4 py-2.5 text-gray-400">
-                      {new Date(file.createdAt).toLocaleDateString()}
-                    </td>
-                    {/*selcted file*/}
-                    <td className="px-4 py-2.5">
-                      <input
-                        type="checkbox"
-                        checked={selectedFile.includes(file.path)}
-                        onChange={() => handleCheckboxClick(file.path)}
-                      />
-                    </td>
+            <div className="max-h-[500px] overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-400 sticky top-0">
+                  <tr>
+                    <th className="text-left px-4 py-2">Name</th>
+                    <th className="text-left px-4 py-2">Category</th>
+                    <th className="text-left px-4 py-2">Size</th>
+                    <th className="text-left px-1.5 py-2">Created</th>
+                    <th className="text-left px-1 py-2 w-12">
+                      <div className="flex items-center gap-1">
+                        <span>All</span>
+                      </div>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {telegramDisplayed.map((file) => (
+                    <tr
+                      key={file.path}
+                      className={`hover:bg-gray-50 transition-colors
+                      ${file.isLarge ? "bg-red-50 hover:bg-red-100" : ""}`}
+                    >
+                      {/* Name */}
+                      <td className="px-4 py-2.5 max-w-xs">
+                        <span className="block truncate font-medium text-gray-700">
+                          {file.name}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {file.extension || "no ext"}
+                        </span>
+                        {file.isDuplicate && (
+                          <div className="text-red-600 text-xs">
+                            ⚠️ Duplicate of: {file.duplicateOf}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Category */}
+                      <td className="px-4 py-2.5">
+                        <CategoryBadge category={file.category} />
+                      </td>
+
+                      {/* Size */}
+                      <td
+                        className={`px-4 py-2.5 font-medium
+                      ${file.isLarge ? "text-red-600" : "text-gray-600"}`}
+                      >
+                        {file.sizeInMB} MB
+                        {file.isLarge && (
+                          <span className="ml-1 text-xs text-red-400">
+                            ⚠ large
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Date */}
+                      <td className="px-4 py-2.5 text-gray-400">
+                        {new Date(file.createdAt).toLocaleDateString()}
+                      </td>
+                      {/*selcted file*/}
+                      <td className="px-4 py-2.5">
+                        <input
+                          type="checkbox"
+                          checked={selectedFile.includes(file.path)}
+                          onChange={() => handleCheckboxClick(file.path)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
