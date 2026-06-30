@@ -159,6 +159,10 @@ export default function App() {
       ? telegramFiles
       : telegramFiles.filter((f) => f.category === telegramFilter);
 
+  const selectAllTelegram =
+    telegramDisplayed.length > 0 &&
+    telegramDisplayed.every((f) => selectedFile.includes(f.path));
+
   const totalMB = files.reduce((sum, f) => sum + f.sizeInMB, 0);
   const largeFiles = files.filter((f) => f.isLarge);
   const largestFile = files[0]; // already sorted largest file in main.js
@@ -178,7 +182,7 @@ export default function App() {
     (sum, f) => sum + f.sizeInMB,
     0,
   );
-  console.log(totalMBForTelegram);
+
   const largeFilesTelegram = telegramFiles.filter((f) => f.isLarge);
   const largestFileInTelegram = telegramFiles[0];
 
@@ -301,44 +305,44 @@ export default function App() {
                 Total freed MB {totalFreedMB.toFixed(2)} MB
               </span>
             </div>
-             <div className="max-h-[500px] overflow-y-auto">
-            <table className="w-full text-sm bg-amber-100">
-              <thead className="bg-amber-950 text-xs uppercase tracking-wide text-gray-400 sticky top-0">
-                <tr>
-                  <th className="text-left px-4 py-2">Name</th>
-                  <th className="text-left px-4 py-2">Category</th>
-                  <th className="text-left px-4 py-2">Size</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-amber-200">
-                {deletedFiles.map((file) => (
-                  <tr key={file.path}>
-                    {/* your <td> cells here */}
-                    <td className="px-4 py-2.5 max-w-xs">
-                      <span className="block truncate font-medium text-gray-700">
-                        {file.name}
-
-                        {file.source === "telegram" && (
-                          <div className="text-shadow-amber-950 font-mono">
-                            📱 Telegram file
-                          </div>
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5 max-w-xs">
-                      <span className="block truncate font-medium text-gray-700">
-                        {file.category}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5 max-w-xs">
-                      <span className="block truncate font-medium text-gray-700">
-                        {file.sizeInMB}
-                      </span>
-                    </td>
+            <div className="max-h-[500px] overflow-y-auto">
+              <table className="w-full text-sm bg-amber-100">
+                <thead className="bg-amber-950 text-xs uppercase tracking-wide text-gray-400 sticky top-0">
+                  <tr>
+                    <th className="text-left px-4 py-2">Name</th>
+                    <th className="text-left px-4 py-2">Category</th>
+                    <th className="text-left px-4 py-2">Size</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-amber-200">
+                  {deletedFiles.map((file) => (
+                    <tr key={file.path}>
+                      {/* your <td> cells here */}
+                      <td className="px-4 py-2.5 max-w-xs">
+                        <span className="block truncate font-medium text-gray-700">
+                          {file.name}
+
+                          {file.source === "telegram" && (
+                            <div className="text-shadow-amber-950 font-mono">
+                              📱 Telegram file
+                            </div>
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 max-w-xs">
+                        <span className="block truncate font-medium text-gray-700">
+                          {file.category}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 max-w-xs">
+                        <span className="block truncate font-medium text-gray-700">
+                          {file.sizeInMB}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -443,9 +447,23 @@ export default function App() {
                           checked={selectAll}
                           onChange={() => {
                             if (selectAll) {
-                              setSelectedFile([]);
+                              // deselect only files currently visible
+                              setSelectedFile(
+                                selectedFile.filter(
+                                  (path) =>
+                                    !displayed
+                                      .map((f) => f.path)
+                                      .includes(path),
+                                ),
+                              );
                             } else {
-                              setSelectedFile(displayed.map((f) => f.path));
+                              // add visible files that aren't already selected
+                              setSelectedFile([
+                                ...selectedFile,
+                                ...displayed
+                                  .filter((f) => !selectedFile.includes(f.path))
+                                  .map((f) => f.path),
+                              ]);
                             }
                           }}
                         />
@@ -547,7 +565,32 @@ export default function App() {
                     <th className="text-left px-1.5 py-2">Created</th>
                     <th className="text-left px-1 py-2 w-12">
                       <div className="flex items-center gap-1">
-                        <span>All</span>
+                        <span>All</span>{" "}
+                        <input
+                          type="checkbox"
+                          checked={selectAllTelegram}
+                          onChange={() => {
+                            if (selectAllTelegram) {
+                              // deselect only files currently visible
+                              setSelectedFile(
+                                selectedFile.filter(
+                                  (path) =>
+                                    !telegramDisplayed
+                                      .map((f) => f.path)
+                                      .includes(path),
+                                ),
+                              );
+                            } else {
+                              // add visible files that aren't already selected
+                              setSelectedFile([
+                                ...selectedFile,
+                                ...telegramDisplayed
+                                  .filter((f) => !selectedFile.includes(f.path))
+                                  .map((f) => f.path),
+                              ]);
+                            }
+                          }}
+                        />
                       </div>
                     </th>
                   </tr>
