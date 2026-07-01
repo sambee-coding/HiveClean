@@ -143,6 +143,21 @@ export default function App() {
       console.error(result.error);
     }
   }
+  //Restores files from the Recycle Bin to their original location.
+
+  async function handleRestore(file) {
+    const updatedDeletedFiles = deletedFiles.filter(
+      (f) => f.path !== file.path,
+    );
+    setDeletedFiles(updatedDeletedFiles);
+    await window.electronAPI.saveDeletedFiles(updatedDeletedFiles);
+    //move the file back to its orginal location
+    if (file.source === "telegram") {
+      setTelegramFiles([...telegramFiles, file]);
+    } else {
+      setFiles([...files, file]);
+    }
+  }
   function handleCheckboxClick(filePath) {
     if (selectedFile.includes(filePath)) {
       setSelectedFile(selectedFile.filter((f) => f !== filePath));
@@ -331,6 +346,7 @@ export default function App() {
                     <th className="text-left px-4 py-2">Name</th>
                     <th className="text-left px-4 py-2">Category</th>
                     <th className="text-left px-4 py-2">Size</th>
+                    <th className="text-left px-4 py-2">Restore</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-amber-200">
@@ -357,6 +373,14 @@ export default function App() {
                         <span className="block truncate font-medium text-gray-700">
                           {file.sizeInMB}
                         </span>
+                      </td>
+                      <td className="px-4 py-2.5 max-w-xs">
+                        <button
+                          className="bg-green-700 hover:bg-amber-50 text-white text-sm font-semibold px-3 py-1.5 rounded-2xl *:transform transition-colors"
+                          onClick={() => handleRestore(file)}
+                        >
+                          Restore
+                        </button>
                       </td>
                     </tr>
                   ))}
