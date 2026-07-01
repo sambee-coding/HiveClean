@@ -68,7 +68,7 @@ export default function App() {
   const [telegramScanned, setTelegramScanned] = useState(false);
   const [showTelegramTable, setShowTelegramTable] = useState(false);
   const [telegramFilter, setTelegramFilter] = useState("All");
-  const [selectedTelegramPath, setSelectedTelegramPath] = useState(null)
+  const [selectedTelegramPath, setSelectedTelegramPath] = useState(null);
   // ─── SCAN ───────────────────────────────────────────────
 
   async function handleTelegramScan() {
@@ -213,7 +213,21 @@ export default function App() {
           {loading ? "Scanning..." : "⚡ Scan Downloads"}{" "}
           {/* the button  text xhanges to indicate loading state*/}
         </button>
+
+        {/* select telegram folder button */}
+
         {scanned && (
+          <button
+            className="px-2 py-4 bg-blue-50 text-black text-sm font-semibold rounded-2xl hover:bg-amber-50"
+            onClick={handleSelectedTelegramFolder}
+          >
+            {selectedTelegramPath
+              ? "📂Telegram Files"
+              : "Select Telegram Folder"}{" "}
+          </button>
+        )}
+
+        {scanned && selectedTelegramPath && (
           <button
             onClick={handleTelegramScan}
             disabled={loading}
@@ -221,12 +235,6 @@ export default function App() {
           >
             {loading ? "Scanning..." : "⚡ Scan Telegram"} {""}
           </button>
-        )}
-      {/* select telegram folder button */}
-
-        {scanned && (
-          <button className="px-2 py-4 bg-blue-50 text-black text-sm font-semibold rounded-2xl hover:bg-amber-50" onClick={handleSelectedTelegramFolder}>
-{selectedTelegramPath ? "📂Telegram Files" : "Select Telegram Folder"}          </button>
         )}
         {/* Category filter list — Downloads */}
         {scanned && !showRecycleBin && !showTelegramTable && (
