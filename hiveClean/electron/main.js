@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain , dialog} = require("electron");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
@@ -112,12 +112,8 @@ ipcMain.handle("scan-downloads", async () => {
   return files;
 });
 
-ipcMain.handle("scan-telegram", async () => {
-  const telegramPath = path.join(
-    os.homedir(),
-    "Downloads",
-    "38833FF26BA1D.UnigramPreview_g9c9v27vpyspw!App",
-  );
+ipcMain.handle("scan-telegram", async (event,telegramPath) => {
+ 
   if (fs.existsSync(telegramPath)) {
     const enteries = fs.readdirSync(telegramPath);
     const files = enteries
@@ -201,6 +197,18 @@ ipcMain.handle("load-deleted-files", () => {
   }
 });
 
+
+ipcMain.handle("select-telegram-folder", async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  })
+  if(!result.canceled && result.filePaths.length > 0){
+    return result.filePaths[0]
+  }
+  else{
+    return null
+  }
+})
 // ─── WINDOW ─────────────────────────────────────────────── ← createWindow is clean
 function createWindow() {
   const win = new BrowserWindow({
