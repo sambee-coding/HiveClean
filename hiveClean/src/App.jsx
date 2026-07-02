@@ -152,10 +152,12 @@ export default function App() {
     setDeletedFiles(updatedDeletedFiles);
     await window.electronAPI.saveDeletedFiles(updatedDeletedFiles);
     //move the file back to its orginal location
-    if (file.source === "telegram") {
-      setTelegramFiles([...telegramFiles, file]);
+    if (file.source === "downloads") {
+   setFiles(prevFiles => [...prevFiles, file].sort((a, b) => b.sizeInMB - a.sizeInMB))
+     console.log('restored file:', file)
+console.log('files after restore:', [...files, file])
     } else {
-      setFiles([...files, file]);
+      setTelegramFiles(prevFiles => [...prevFiles, file].sort((a, b) => b.sizeInMB - a.sizeInMB))
     }
   }
   function handleCheckboxClick(filePath) {
@@ -207,11 +209,15 @@ export default function App() {
   const largeFilesTelegram = telegramFiles.filter((f) => f.isLarge);
   const largestFileInTelegram = telegramFiles[0];
 
+   console.log('displayed count:', displayed.length)
+console.log('files count:', files.length)
+  console.log('scanned:', scanned, 'showRecycleBin:', showRecycleBin)
+  console.log('duplicate paths:', displayed.filter((f, i) => displayed.findIndex(d => d.path === f.path) !== i))
   // ─── RENDER ──────────────────────────────────────────────
   return (
     <div className="flex h-screen bg-amber-50 text-gray-800 font-sans">
       {/* ── SIDEBAR ── */}
-      <aside className="w-56 bg-gray border-r border-gray-200 flex flex-col py-6 px-4 gap-6 shrink-0">
+      <aside className="w-56 bg-amber-100 border-r border-gray-200 flex flex-col py-6 px-4 gap-6 shrink-0 ">
         {/* Logo */}
         <div className="flex items-center gap-2 px-2">
           <span className="text-2xl">🐝</span>
@@ -223,7 +229,7 @@ export default function App() {
           onClick={handleScan}
           disabled={loading} // button unclickable while scanning
           className="w-full bg-amber-400 hover:bg-amber-500 disabled:opacity-50 
-                     text-white font-bold py-4 px-2 rounded-lg transition-colors"
+                     text-white font-bold py-3 px-2 rounded-lg transition-colors"
         >
           {loading ? "Scanning..." : "⚡ Scan Downloads"}{" "}
           {/* the button  text xhanges to indicate loading state*/}
@@ -246,7 +252,7 @@ export default function App() {
           <button
             onClick={handleTelegramScan}
             disabled={loading}
-            className="px-2 py-4 bg-blue-300 text-black text-sm font-semibold rounded-2xl hover:bg-blue-200"
+            className="px-2 py-3 bg-blue-300 text-black text-sm font-semibold rounded-lg hover:bg-blue-200"
           >
             {loading ? "Scanning..." : "⚡ Scan Telegram"} {""}
           </button>
@@ -285,8 +291,8 @@ export default function App() {
               <button
                 key={cat}
                 onClick={() => setTelegramFilter(cat)}
-                className={`text-left text-sm px-3 py-1.5 rounded-lg transition-colors
-          ${telegramFilter === cat ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100"}`}
+                className={`text-left text-sm px-3 py-1 rounded-lg transition-colors
+          ${telegramFilter === cat ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-600 hover:bg-gray-100 rounded-lg"}`}
               >
                 {CATEGORY_ICONS[cat] ?? "📂"} {cat}
                 <span className="float-right text-xs text-gray-400">
@@ -313,7 +319,7 @@ export default function App() {
             </p>
           </div>
           <button
-            className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
+            className=" px-6 py-0.5  text-amber-50 cursor-pointer rounded-lg bg-amber-500 hover:bg-amber-300 justify-between"
             onClick={() => setShowRecycleBin(!showRecycleBin)}
           >
             {showRecycleBin ? "← Back" : "🗑 Recycle Bin"}
@@ -321,7 +327,7 @@ export default function App() {
 
           {showTelegramTable && (
             <button
-              className=" px-16 py-1 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
+              className=" px-5 py-0.5 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
               onClick={() => setShowTelegramTable(false)}
             >
               {showTelegramTable ? "← Back" : " Telegram Files"}
@@ -421,6 +427,8 @@ export default function App() {
             />
           </div>
         )}
+
+        
 
         {/* ── STAT CARDS ── */}
         {scanned && !showRecycleBin && !showTelegramTable && (
@@ -523,7 +531,7 @@ export default function App() {
                     >
                       {/* Name */}
                       <td className="px-4 py-2.5 max-w-xs">
-                        <span className="block truncate font-medium text-gray-700">
+                        <span className="block truncate font-medium text-gray-500 text-xs">
                           {file.name}
                         </span>
                         <span className="text-xs text-gray-400">
@@ -647,7 +655,7 @@ export default function App() {
                     >
                       {/* Name */}
                       <td className="px-4 py-2.5 max-w-xs">
-                        <span className="block truncate font-medium text-gray-700">
+                        <span className="block truncate font-medium text-gray-500 text-xs">
                           {file.name}
                         </span>
                         <span className="text-xs text-gray-400">

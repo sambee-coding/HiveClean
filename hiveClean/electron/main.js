@@ -112,8 +112,11 @@ ipcMain.handle("scan-downloads", async () => {
   return files;
 });
 
+
+
 ipcMain.handle("scan-telegram", async (event,telegramPath) => {
- 
+  console.log('Telegram path received:', telegramPath)
+  
   if (fs.existsSync(telegramPath)) {
     const enteries = fs.readdirSync(telegramPath);
     const files = enteries
