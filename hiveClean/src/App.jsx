@@ -151,7 +151,6 @@ export default function App() {
     );
     setDeletedFiles(updatedDeletedFiles);
     await window.electronAPI.saveDeletedFiles(updatedDeletedFiles);
-    await window.electronAPI.saveDeletedFiles(updatedDeletedFiles)
   window.alert(`"${file.name}" removed from HiveClean history.\n\nTo restore the actual file, open your Recycle Bin and restore it from there.`)
   }
   function handleCheckboxClick(filePath) {
@@ -203,10 +202,7 @@ export default function App() {
   const largeFilesTelegram = telegramFiles.filter((f) => f.isLarge);
   const largestFileInTelegram = telegramFiles[0];
 
-   console.log('displayed count:', displayed.length)
-console.log('files count:', files.length)
-  console.log('scanned:', scanned, 'showRecycleBin:', showRecycleBin)
-  console.log('duplicate paths:', displayed.filter((f, i) => displayed.findIndex(d => d.path === f.path) !== i))
+   
   // ─── RENDER ──────────────────────────────────────────────
   return (
     <div className="flex h-screen bg-amber-50 text-gray-800 font-sans">
