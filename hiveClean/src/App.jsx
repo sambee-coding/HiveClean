@@ -151,14 +151,8 @@ export default function App() {
     );
     setDeletedFiles(updatedDeletedFiles);
     await window.electronAPI.saveDeletedFiles(updatedDeletedFiles);
-    //move the file back to its orginal location
-    if (file.source === "downloads") {
-   setFiles(prevFiles => [...prevFiles, file].sort((a, b) => b.sizeInMB - a.sizeInMB))
-     console.log('restored file:', file)
-console.log('files after restore:', [...files, file])
-    } else {
-      setTelegramFiles(prevFiles => [...prevFiles, file].sort((a, b) => b.sizeInMB - a.sizeInMB))
-    }
+    await window.electronAPI.saveDeletedFiles(updatedDeletedFiles)
+  window.alert(`"${file.name}" removed from HiveClean history.\n\nTo restore the actual file, open your Recycle Bin and restore it from there.`)
   }
   function handleCheckboxClick(filePath) {
     if (selectedFile.includes(filePath)) {
