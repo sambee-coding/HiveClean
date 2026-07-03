@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
 
 // ─── CONSTANTS ────────────────────────────────────────────
 const CATEGORY_COLORS = {
@@ -55,7 +56,70 @@ function StatCard({ label, value, sub, accent }) {
 }
 // ──────────────────────────────────────────────────────────
 
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false)
+
+  async function handleLogin() {
+  setLoading(true)
+  setError(null)
+  
+  let error
+  if (isSignUp) {
+    ({ error } = await supabase.auth.signUp({ email, password }))
+  } else {
+    ({ error } = await supabase.auth.signInWithPassword({ email, password }))
+  }
+  
+  if (error) setError(error.message)
+  setLoading(false)
+}
+
+  return (
+    <div className="flex h-screen items-center justify-center bg-amber-50">
+      <div className="bg-amber-100 rounded-xl p-8 shadow-lg w-96 flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🐝</span>
+          <span className="font-bold text-lg">HiveClean</span>
+        </div>
+       <h2 className="text-xl font-bold">{isSignUp ? 'Sign up' : 'Sign in'}</h2>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+        />
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="bg-amber-400 hover:bg-amber-500 disabled:opacity-50 text-white font-bold py-2 rounded-lg"
+        >
+        {loading ? '...' : isSignUp ? 'Sign up' : 'Sign in'}
+        </button>
+        <p className="text-sm text-center text-gray-500">
+  {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+  <button onClick={() => setIsSignUp(!isSignUp)} className="text-amber-500 font-semibold">
+    {isSignUp ? 'Sign in' : 'Sign up'}
+  </button>
+</p>
+      </div>
+    </div>
+  );
+}
 export default function App() {
+  const [session, setSession] = useState(null);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("All");
@@ -151,7 +215,10 @@ export default function App() {
     );
     setDeletedFiles(updatedDeletedFiles);
     await window.electronAPI.saveDeletedFiles(updatedDeletedFiles);
-   window.alert(`"${file.name}" removed from HiveClean history.\n\nThe file is still in your Recycle Bin (Windows) or Trash (macOS). Open it to restore the actual file.`)  }
+    window.alert(
+      `"${file.name}" removed from HiveClean history.\n\nThe file is still in your Recycle Bin (Windows) or Trash (macOS). Open it to restore the actual file.`,
+    );
+  }
   function handleCheckboxClick(filePath) {
     if (selectedFile.includes(filePath)) {
       setSelectedFile(selectedFile.filter((f) => f !== filePath));
@@ -201,7 +268,22 @@ export default function App() {
   const largeFilesTelegram = telegramFiles.filter((f) => f.isLarge);
   const largestFileInTelegram = telegramFiles[0];
 
-   
+  //─────────────────── creating session state for supabase auth ─────────────────────
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (!session) {
+    return <Login />;
+  }
   // ─── RENDER ──────────────────────────────────────────────
   return (
     <div className="flex h-screen bg-amber-50 text-gray-800 font-sans">
@@ -322,6 +404,12 @@ export default function App() {
               {showTelegramTable ? "← Back" : " Telegram Files"}
             </button>
           )}
+          <button
+            className="px-6 py-0.5 text-amber-50 cursor-pointer rounded-lg bg-amber-800 hover:bg-gray-400"
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign out
+          </button>
         </div>
 
         {showRecycleBin && (
@@ -416,8 +504,6 @@ export default function App() {
             />
           </div>
         )}
-
-        
 
         {/* ── STAT CARDS ── */}
         {scanned && !showRecycleBin && !showTelegramTable && (
@@ -644,7 +730,7 @@ export default function App() {
                     >
                       {/* Name */}
                       <td className="px-4 py-2.5 max-w-xs">
-                        <span className="block truncate font-medium text-gray-500 text-xs">
+                        <span className="block truncate font-medium text-gray-700 ">
                           {file.name}
                         </span>
                         <span className="text-xs text-gray-400">
