@@ -138,7 +138,6 @@ export default function App() {
   async function handleTelegramScan() {
     setLoading(true);
     const result = await window.electronAPI.scanTelegram(selectedTelegramPath);
-    console.log("Telegram result:", result);
     setTelegramFiles(result);
     setShowTelegramTable(true);
     setTelegramScanned(true);

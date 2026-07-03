@@ -7,7 +7,8 @@
     "electron": "cross-env NODE_ENV=development electron .",
     "start": "concurrently \"npm run dev\" \"npm run electron\"",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "pack": "npm run build && electron-builder"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",
@@ -17,6 +18,27 @@
     "tailwindcss": "^4.3.0",
     "trash": "^10.1.1"
   },
+  "build": {
+  "appId": "com.sambee.hiveclean",
+  "productName": "HiveClean",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "electron/**/*",
+    "package.json"
+  ],
+ "win": {
+  "target": "nsis",
+  "icon": "src/assets/icon.png"
+
+},
+  "mac": {
+    "target": "dmg",
+    "icon": "src/assets/icon.png"
+  }
+},
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.14",
@@ -25,6 +47,7 @@
     "concurrently": "^10.0.3",
     "cross-env": "^10.1.0",
     "electron": "^42.3.3",
+    "electron-builder": "^26.15.3",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
