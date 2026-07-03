@@ -469,6 +469,11 @@ export default function App() {
                   ))}
                 </tbody>
               </table>
+             {!deletedFiles.length &&(
+              <div className="text-sm text-gray-500 text-center py-12">
+                No deleted files yet Scan your Downloads or Telegram folder to find the files you want to delete.
+                </div>
+             )}
             </div>
           </div>
         )}
