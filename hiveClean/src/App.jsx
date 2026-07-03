@@ -151,8 +151,7 @@ export default function App() {
     );
     setDeletedFiles(updatedDeletedFiles);
     await window.electronAPI.saveDeletedFiles(updatedDeletedFiles);
-  window.alert(`"${file.name}" removed from HiveClean history.\n\nTo restore the actual file, open your Recycle Bin and restore it from there.`)
-  }
+   window.alert(`"${file.name}" removed from HiveClean history.\n\nThe file is still in your Recycle Bin (Windows) or Trash (macOS). Open it to restore the actual file.`)  }
   function handleCheckboxClick(filePath) {
     if (selectedFile.includes(filePath)) {
       setSelectedFile(selectedFile.filter((f) => f !== filePath));
