@@ -3,8 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 const crypto = require("crypto");
-const trashModule = require("trash");
-const trash = trashModule.default;
+const { shell } = require("electron");
 
 // ─── FILE CATEGORY DETECTOR ─────────────────────────────── ← top level ✓
 function getCategory(ext) {
@@ -170,9 +169,13 @@ ipcMain.handle("scan-telegram", async (event,telegramPath) => {
   }
 });
 
+
+
 ipcMain.handle("delete-files", async (event, filePaths) => {
   try {
-    await trash(filePaths);
+    for (const filePath of filePaths) {
+      await shell.trashItem(filePath);
+    }
     const response = { success: true, deleted: filePaths.length };
     return response;
   } catch (err) {
