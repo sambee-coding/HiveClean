@@ -7,6 +7,7 @@
     "electron": "cross-env NODE_ENV=development electron .",
     "start": "concurrently \"npm run dev\" \"npm run electron\"",
     "build": "vite build",
+    "build:linux": "npm run build && electron-builder --linux",
     "preview": "vite preview",
     "pack": "npm run build && electron-builder"
   },
@@ -19,26 +20,32 @@
     "trash": "^10.1.1"
   },
   "build": {
-  "appId": "com.sambee.hiveclean",
-  "productName": "HiveClean",
-  "directories": {
-    "output": "release"
+    "appId": "com.sambee.hiveclean",
+    "productName": "HiveClean",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/icon.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/icon.png"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Utility",
+      "icon": "src/assets/icon.png",
+      "desktopName": "HiveClean",
+      "syncdesktopName": true
+    }
   },
-  "files": [
-    "dist/**/*",
-    "electron/**/*",
-    "package.json"
-  ],
- "win": {
-  "target": "nsis",
-  "icon": "src/assets/icon.png"
-
-},
-  "mac": {
-    "target": "dmg",
-    "icon": "src/assets/icon.png"
-  }
-},
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.14",
