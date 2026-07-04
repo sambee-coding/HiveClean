@@ -164,6 +164,8 @@ export default function App() {
     loadDeletedFiles();
   }, []);
   async function handleDelete() {
+
+    
     const result = await window.electronAPI.deleteFiles(selectedFile);
 
     // If success
@@ -392,15 +394,15 @@ export default function App() {
             className=" px-6 py-0.5  text-amber-50 cursor-pointer rounded-lg bg-amber-500 hover:bg-amber-300 justify-between"
             onClick={() => setShowRecycleBin(!showRecycleBin)}
           >
-            {showRecycleBin ? "← Back" : "🗑 Recycle Bin"}
+            {showRecycleBin ? "← Close bin" : "🗑 Recycle Bin"}
           </button>
 
           {showTelegramTable && (
             <button
-              className=" px-5 py-0.5 text-amber-50 cursor-pointer rounded-2xl bg-amber-500 hover:bg-amber-300"
+              className=" px-5 py-0.5 text-amber-50 cursor-pointer rounded-2xl bg-blue-500 hover:bg-blue-400"
               onClick={() => setShowTelegramTable(false)}
             >
-              {showTelegramTable ? "← Back" : " Telegram Files"}
+              {showTelegramTable ? "← Leave Telegram" : " Telegram Files"}
             </button>
           )}
           <button
