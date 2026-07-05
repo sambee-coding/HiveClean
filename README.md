@@ -22,11 +22,13 @@ A lightweight, open-source file cleanup utility for Windows that helps you recla
 4. Launch HiveClean from your Start menu
 ## Building from Source
 
+## Building from Source
+
 ### Windows
 Download the pre-built installer from [Releases](https://github.com/sambee-coding/HiveClean/releases)
 
-### Linux & macOS
-Build the AppImage or DMG locally:
+### Linux
+Build the AppImage locally:
 
 1. Clone the repository:
 ```bash
@@ -39,21 +41,14 @@ cd HiveClean/hiveClean
 npm install
 ```
 
-3. Build for your platform:
-
-**Linux (AppImage):**
+3. Build for Linux:
 ```bash
 npm run build:linux
 ```
 
-**macOS (DMG):**
-```bash
-npm run build:mac
-```
-
 The built application will be in the `release/` folder.
 
-> **Note:** Pre-built Linux and macOS releases coming soon with GitHub Actions CI/CD automation.
+> **Note:** Pre-built AppImage and macOS/Windows releases coming soon with GitHub Actions CI/CD automation.
 ### Usage
 
 1. **Scan Downloads** — Click the scan button to analyze your Downloads folder
