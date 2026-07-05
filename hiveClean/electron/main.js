@@ -208,20 +208,7 @@ ipcMain.handle("save-deleted-files", (event, newDeletedFiles) => {
   const data = fs.writeFileSync(filePath, JSON.stringify(newDeletedFiles));
   return data;
 });
-/*
-ipcMain.handle("load-deleted-files", () => {
-  //loading the deleted file from the save-delted-files
-  const filePath = path.join(app.getPath("userData"), "deletedFiles.json");
-  try {
-    const raw = fs.readFileSync(filePath, "utf-8");
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error(`there is error ${err.message}`);
-    return [];
-  }
-});
 
-*/
 ipcMain.handle("select-telegram-folder", async () => {
   const result = await dialog.showOpenDialog({
     properties: ["openDirectory"],
