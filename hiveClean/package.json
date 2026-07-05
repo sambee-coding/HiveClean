@@ -39,7 +39,7 @@
   "icon": "src/assets/icon.png"
 },
 "linux": {
-  "target": "AppImage"
+  "target": ["AppImage"]
 }
 },
   "devDependencies": {
