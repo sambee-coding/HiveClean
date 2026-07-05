@@ -170,7 +170,7 @@ ipcMain.handle("scan-telegram", async (event,telegramPath) => {
 });
 
 
-/*
+
 ipcMain.handle("delete-files", async (event, filePaths) => {
   try {
     for (const filePath of filePaths) {
@@ -183,7 +183,7 @@ ipcMain.handle("delete-files", async (event, filePaths) => {
     return error;
   }
 });
-*/
+
 ipcMain.handle('load-deleted-files', async () => {
   const filePath = path.join(app.getPath('userData'), 'deletedFiles.json')
   
@@ -208,7 +208,7 @@ ipcMain.handle("save-deleted-files", (event, newDeletedFiles) => {
   const data = fs.writeFileSync(filePath, JSON.stringify(newDeletedFiles));
   return data;
 });
-
+/*
 ipcMain.handle("load-deleted-files", () => {
   //loading the deleted file from the save-delted-files
   const filePath = path.join(app.getPath("userData"), "deletedFiles.json");
@@ -221,7 +221,7 @@ ipcMain.handle("load-deleted-files", () => {
   }
 });
 
-
+*/
 ipcMain.handle("select-telegram-folder", async () => {
   const result = await dialog.showOpenDialog({
     properties: ["openDirectory"],

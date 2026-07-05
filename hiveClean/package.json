@@ -30,22 +30,18 @@
       "electron/**/*",
       "package.json"
     ],
-    "win": {
-      "target": "nsis",
-      "icon": "src/assets/icon.png"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "src/assets/icon.png"
-    },
-    "linux": {
-      "target": ["AppImage"],
-      "category": "Utility",
-      "icon": "src/assets/icon.png",
-      "desktopName": "HiveClean",
-      "syncdesktopName": true
-    }
-  },
+   "win": {
+  "target": "nsis",
+  "icon": "src/assets/icon.png"
+},
+"mac": {
+  "target": "dmg",
+  "icon": "src/assets/icon.png"
+},
+"linux": {
+  "target": "AppImage"
+}
+},
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.14",
