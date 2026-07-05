@@ -170,7 +170,7 @@ ipcMain.handle("scan-telegram", async (event,telegramPath) => {
 });
 
 
-
+/*
 ipcMain.handle("delete-files", async (event, filePaths) => {
   try {
     for (const filePath of filePaths) {
@@ -183,6 +183,24 @@ ipcMain.handle("delete-files", async (event, filePaths) => {
     return error;
   }
 });
+*/
+ipcMain.handle('load-deleted-files', async () => {
+  const filePath = path.join(app.getPath('userData'), 'deletedFiles.json')
+  
+  try {
+    // Create directory if it doesn't exist (fixes Linux first-run issue)
+    const dirPath = path.dirname(filePath)
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true })
+    }
+    
+    const raw = fs.readFileSync(filePath, 'utf-8')
+    return JSON.parse(raw)
+  } catch (err) {
+    console.error(`error loading deleted files: ${err.message}`)
+    return []
+  }
+})
 
 ipcMain.handle("save-deleted-files", (event, newDeletedFiles) => {
   //saving the deleted files
